@@ -1,0 +1,132 @@
+import type { NetworkValue, IntegrationLevel } from '../types/flow';
+import { formatValue } from '../utils/metcalfe';
+import { INTEGRATION_CONFIGS, INTEGRATION_LEVELS } from '../constants/nodes';
+import { NetworkIcon, ChartIcon } from './icons/ServiceIcons';
+
+interface HeaderProps {
+  nodeCount: number;
+  connectionCount: number;
+  networkValue: NetworkValue;
+  integrationLevel: IntegrationLevel;
+  onIntegrationLevelChange: (level: IntegrationLevel) => void;
+}
+
+export const Header: React.FC<HeaderProps> = ({
+  nodeCount,
+  connectionCount,
+  networkValue,
+  integrationLevel,
+  onIntegrationLevelChange,
+}) => {
+  const hasNodes = nodeCount > 0;
+  const hasConnections = connectionCount > 0;
+  const showMultiplier = hasNodes && hasConnections && networkValue.multiplier > 1;
+  const currentIntegration = INTEGRATION_CONFIGS[integrationLevel];
+
+  return (
+    <header className="glass-heavy border-b border-white/30 shadow-glass-sm relative">
+      {/* Top row: Title and stats */}
+      <div className="flex items-center justify-between" style={{ height: '52px', padding: '0 20px' }}>
+        <div className="flex items-center" style={{ gap: '10px' }}>
+          <div className="rounded-lg bg-white/50 backdrop-blur-sm border border-white/40 flex items-center justify-center shadow-sm flex-shrink-0" style={{ width: '32px', height: '32px' }}>
+            <NetworkIcon style={{ width: '16px', height: '16px' }} className="text-slate-600" />
+          </div>
+          <div className="min-w-0">
+            <h1 className="text-sm font-semibold text-slate-800 leading-tight">
+              Network Value Canvas
+            </h1>
+            <span className="text-[11px] text-slate-500 leading-tight">
+              Metcalfe's Law Visualizer
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center" style={{ gap: '12px' }}>
+          {/* Integration Level Selector */}
+          <div className="flex items-center" style={{ gap: '8px' }}>
+            <span className="text-xs text-slate-600">Integration</span>
+            <select
+              value={integrationLevel}
+              onChange={(e) => onIntegrationLevelChange(e.target.value as IntegrationLevel)}
+              className="text-xs font-medium bg-white/60 backdrop-blur-sm text-slate-700 border border-white/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent cursor-pointer shadow-sm transition-all duration-300 hover:bg-white/80"
+              style={{ padding: '6px 10px' }}
+            >
+              {INTEGRATION_LEVELS.map((level) => (
+                <option key={level.level} value={level.level}>
+                  {level.label} ({level.coefficient.toFixed(1)}x)
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Stats badges - glass pill style */}
+          <div className="flex items-center" style={{ gap: '8px' }}>
+            <span className="flex items-center text-xs text-slate-700 bg-white/50 backdrop-blur-sm border border-white/40 rounded-full shadow-sm" style={{ gap: '6px', padding: '4px 10px' }}>
+              <span className="rounded-full bg-blue-500" style={{ width: '5px', height: '5px' }}></span>
+              {nodeCount} services
+            </span>
+            <span className="flex items-center text-xs text-slate-700 bg-white/50 backdrop-blur-sm border border-white/40 rounded-full shadow-sm" style={{ gap: '6px', padding: '4px 10px' }}>
+              <span className="rounded-full bg-emerald-500" style={{ width: '5px', height: '5px' }}></span>
+              {connectionCount} connections
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom row: Network value display */}
+      {hasNodes && (
+        <div className="bg-white/20 border-t border-white/30" style={{ padding: '12px 20px' }}>
+          <div className="flex items-center justify-center" style={{ gap: '12px' }}>
+            {/* Standalone Value - glass card */}
+            <div className="glass rounded-xl shadow-sm" style={{ padding: '10px 20px' }}>
+              <div className="text-xs font-medium text-slate-500" style={{ marginBottom: '2px' }}>Standalone Value</div>
+              <div className="text-lg font-semibold text-slate-800">
+                {formatValue(networkValue.standaloneValue)}
+              </div>
+            </div>
+
+            {/* Arrow */}
+            {hasConnections && (
+              <div className="flex items-center text-slate-400/60" style={{ gap: '4px' }}>
+                <div className="bg-gradient-to-r from-slate-300/50 to-slate-400/50" style={{ width: '16px', height: '1px' }}></div>
+                <div className="rounded-full bg-white/40 backdrop-blur-sm border border-white/50 flex items-center justify-center shadow-sm" style={{ width: '24px', height: '24px' }}>
+                  <ChartIcon className="text-slate-500" style={{ width: '12px', height: '12px' }} />
+                </div>
+                <div className="bg-gradient-to-l from-slate-300/50 to-slate-400/50" style={{ width: '16px', height: '1px' }}></div>
+              </div>
+            )}
+
+            {/* Connected Value - glass card with blue tint */}
+            {hasConnections && (
+              <div className="rounded-xl shadow-sm bg-blue-500/80 backdrop-blur-xl border border-blue-400/50" style={{ padding: '10px 20px' }}>
+                <div className="text-xs font-medium text-blue-100" style={{ marginBottom: '2px' }}>
+                  Connected Value x{currentIntegration.coefficient.toFixed(1)}
+                </div>
+                <div className="text-lg font-semibold text-white">
+                  {formatValue(networkValue.connectedValue)}
+                </div>
+              </div>
+            )}
+
+            {/* Multiplier - glass card with green tint */}
+            {showMultiplier && (
+              <div className="flex items-center rounded-xl shadow-sm bg-emerald-500/80 backdrop-blur-xl border border-emerald-400/50" style={{ padding: '8px 16px', gap: '8px' }}>
+                <div className="text-lg font-bold text-white">
+                  {networkValue.multiplier.toFixed(1)}x
+                </div>
+                <span className="text-xs font-medium text-emerald-100 bg-white/20 rounded-full" style={{ padding: '2px 6px' }}>UP</span>
+              </div>
+            )}
+
+            {/* No connections hint */}
+            {!hasConnections && (
+              <div className="flex items-center text-xs text-slate-500 bg-white/30 backdrop-blur-sm rounded-full border border-white/40" style={{ padding: '6px 12px', gap: '4px' }}>
+                <span>Connect nodes to see network effects</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </header>
+  );
+};
