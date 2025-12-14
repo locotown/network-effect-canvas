@@ -33,10 +33,11 @@ export const SharePage: React.FC = () => {
   // Update document title and OGP meta tags based on state
   useEffect(() => {
     if (flowState) {
+      const canvasName = flowState.name || 'マイキャンバス';
       const nodeCount = flowState.nodes.length;
       const connectionCount = flowState.connections.length;
-      const title = `${nodeCount}ノード・${connectionCount}接続 | ネットワーク効果キャンバス`;
-      const description = `ネットワーク効果を視覚化: ${nodeCount}つのノードと${connectionCount}つの接続で構成されたキャンバス`;
+      const title = `${canvasName} | ネットワーク効果キャンバス`;
+      const description = `${canvasName}: ${nodeCount}ノード・${connectionCount}接続のネットワーク効果を可視化`;
       const stateParam = encodeFlowState(flowState);
       const ogImageUrl = `${window.location.origin}/api/og?state=${stateParam}`;
 
@@ -104,7 +105,7 @@ export const SharePage: React.FC = () => {
             </div>
             <div className="min-w-0">
               <h1 className="text-sm font-semibold text-slate-800 leading-tight">
-                ネットワーク効果キャンバス
+                {flowState.name || 'マイキャンバス'}
               </h1>
               <span className="text-[11px] text-slate-500 leading-tight">
                 共有されたキャンバス

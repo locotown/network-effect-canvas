@@ -14,6 +14,8 @@ interface HeaderProps {
   onHelpClick: () => void;
   flowState: FlowState;
   onImportState: (state: FlowState) => void;
+  canvasName: string;
+  onCanvasNameChange: (name: string) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -25,8 +27,12 @@ export const Header: React.FC<HeaderProps> = ({
   onHelpClick,
   flowState,
   onImportState,
+  canvasName,
+  onCanvasNameChange,
 }) => {
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editingName, setEditingName] = useState(canvasName);
   const hasNodes = nodeCount > 0;
   const hasConnections = connectionCount > 0;
   const showMultiplier = hasNodes && hasConnections && networkValue.multiplier > 1;
@@ -41,9 +47,63 @@ export const Header: React.FC<HeaderProps> = ({
             <NetworkIcon style={{ width: '16px', height: '16px' }} className="text-slate-600" />
           </div>
           <div className="min-w-0">
-            <h1 className="text-sm font-semibold text-slate-800 leading-tight">
-              ネットワーク効果キャンバス
-            </h1>
+            {isEditingName ? (
+              <div className="flex items-center gap-1">
+                <input
+                  type="text"
+                  value={editingName}
+                  onChange={(e) => setEditingName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      onCanvasNameChange(editingName);
+                      setIsEditingName(false);
+                    } else if (e.key === 'Escape') {
+                      setEditingName(canvasName);
+                      setIsEditingName(false);
+                    }
+                  }}
+                  className="text-sm font-semibold text-slate-800 bg-white/60 border border-blue-300 rounded px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  style={{ minWidth: '120px', maxWidth: '200px' }}
+                  autoFocus
+                />
+                <button
+                  onClick={() => {
+                    onCanvasNameChange(editingName);
+                    setIsEditingName(false);
+                  }}
+                  className="p-1 text-emerald-600 hover:bg-emerald-100 rounded"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => {
+                    setEditingName(canvasName);
+                    setIsEditingName(false);
+                  }}
+                  className="p-1 text-slate-500 hover:bg-slate-100 rounded"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            ) : (
+              <h1
+                className="text-sm font-semibold text-slate-800 leading-tight cursor-pointer hover:text-blue-600 transition-colors group flex items-center gap-1"
+                onClick={() => {
+                  setEditingName(canvasName);
+                  setIsEditingName(true);
+                }}
+                title="クリックして編集"
+              >
+                {canvasName}
+                <svg className="w-3 h-3 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+              </h1>
+            )}
             <span className="text-[11px] text-slate-500 leading-tight">
               戦略的ネットワーク可視化ツール
             </span>

@@ -32,6 +32,7 @@ export interface Connection {
 
 // Complete flow state
 export interface FlowState {
+  name?: string;  // キャンバス名（オプショナル、既存データ互換のため）
   nodes: FlowNode[];
   connections: Connection[];
 }

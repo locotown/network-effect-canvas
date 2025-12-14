@@ -33,6 +33,7 @@ const linePreset: Preset = {
     networkEffect: '直接ネットワーク効果：ユーザー同士が直接つながることで価値が生まれる',
   },
   data: {
+    name: 'LINE ネットワーク効果',
     nodes: [
       {
         id: 'line-users',
@@ -101,6 +102,7 @@ const mercariPreset: Preset = {
     networkEffect: '間接ネットワーク効果：異なるグループ間で相互に価値が高まる両面市場',
   },
   data: {
+    name: 'メルカリ 両面市場効果',
     nodes: [
       {
         id: 'mercari-sellers',
@@ -180,6 +182,7 @@ const uberPreset: Preset = {
     networkEffect: '間接ネットワーク効果 + プラットフォーム拡張：複数サービスでドライバーを共有',
   },
   data: {
+    name: 'Uber ライドシェア効果',
     nodes: [
       {
         id: 'uber-drivers',
@@ -248,6 +251,7 @@ const phonePreset: Preset = {
     networkEffect: 'メトカーフの法則：ネットワークの価値は参加者数の2乗に比例する',
   },
   data: {
+    name: '電話ネットワーク メトカーフの法則',
     nodes: [
       {
         id: 'phone-tokyo',

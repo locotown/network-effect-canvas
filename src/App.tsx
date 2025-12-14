@@ -10,6 +10,7 @@ const WELCOME_DISMISSED_KEY = 'network-effect-canvas-welcome-dismissed';
 
 function App() {
   const {
+    name,
     nodes,
     connections,
     connectingFrom,
@@ -29,6 +30,7 @@ function App() {
     clearCurrentPreset,
     getState,
     importState,
+    setName,
   } = useFlowState();
 
   // Get current preset object from ID
@@ -108,6 +110,8 @@ function App() {
         onHelpClick={() => handleOpenHelp()}
         flowState={getState()}
         onImportState={importState}
+        canvasName={name}
+        onCanvasNameChange={setName}
       />
 
       <div className="flex-1 flex overflow-hidden">

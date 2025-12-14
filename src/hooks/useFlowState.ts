@@ -10,6 +10,7 @@ const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9
 
 // Initial state
 const initialState: FlowState = {
+  name: 'マイキャンバス',
   nodes: [],
   connections: [],
 };
@@ -39,7 +40,12 @@ const loadState = (): FlowState => {
       synergy: conn.synergy ?? 'standard',
     }));
 
-    return { nodes, connections };
+    // Include name (default to 'マイキャンバス' for existing data)
+    return {
+      name: parsed.name ?? 'マイキャンバス',
+      nodes,
+      connections,
+    };
   } catch {
     return initialState;
   }
@@ -268,7 +274,18 @@ export const useFlowState = () => {
     setCurrentPresetId(null);
   }, []);
 
+  // Update canvas name
+  const setName = useCallback((name: string) => {
+    setState((prev) => {
+      const newState = { ...prev, name };
+      saveState(newState);
+      return newState;
+    });
+    setCurrentPresetId(null); // プリセットから変更されたことを示す
+  }, []);
+
   return {
+    name: state.name ?? 'マイキャンバス',
     nodes: state.nodes,
     connections: state.connections,
     connectingFrom,
@@ -290,5 +307,6 @@ export const useFlowState = () => {
     clearCurrentPreset,
     getState,
     importState,
+    setName,
   };
 };

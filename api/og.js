@@ -156,7 +156,8 @@ export default async function handler(request) {
     );
   }
 
-  const { nodes, connections } = state;
+  const { name, nodes, connections } = state;
+  const canvasName = name || 'マイキャンバス';
   const multiplier = calculateMultiplier(nodes, connections);
   const topNodes = nodes.slice(0, 5);
 
@@ -329,14 +330,14 @@ export default async function handler(request) {
                               type: 'h1',
                               props: {
                                 style: { fontSize: 32, fontWeight: 'bold', color: '#1e293b', margin: 0 },
-                                children: 'ネットワーク効果キャンバス',
+                                children: canvasName,
                               },
                             },
                             {
                               type: 'p',
                               props: {
                                 style: { fontSize: 18, color: '#64748b', margin: 0 },
-                                children: '共有されたキャンバス',
+                                children: 'ネットワーク効果キャンバス',
                               },
                             },
                           ],
