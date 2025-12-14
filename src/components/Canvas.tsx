@@ -1,7 +1,9 @@
 import { useRef } from 'react';
 import type { FlowNode, Connection, Position, SynergyLevel } from '../types/flow';
+import type { Preset } from '../constants/presets';
 import { Node } from './Node';
 import { ConnectionLine } from './ConnectionLine';
+import { ExplanationPanel } from './ExplanationPanel';
 import { NetworkIcon } from './icons/ServiceIcons';
 
 interface CanvasProps {
@@ -9,6 +11,7 @@ interface CanvasProps {
   connections: Connection[];
   connectingFrom: string | null;
   pendingNode: { input: any } | null;
+  currentPreset: Preset | null;
   onDropNode: (position: Position) => void;
   onUpdateNodePosition: (id: string, position: Position) => void;
   onUpdateNodeValue: (id: string, value: number) => void;
@@ -19,6 +22,7 @@ interface CanvasProps {
   onDeleteNode: (id: string) => void;
   onDeleteConnection: (id: string) => void;
   onUpdateConnectionSynergy: (id: string, synergy: SynergyLevel) => void;
+  onClearPreset: () => void;
 }
 
 export const Canvas: React.FC<CanvasProps> = ({
@@ -26,6 +30,7 @@ export const Canvas: React.FC<CanvasProps> = ({
   connections,
   connectingFrom,
   pendingNode,
+  currentPreset,
   onDropNode,
   onUpdateNodePosition,
   onUpdateNodeValue,
@@ -36,6 +41,7 @@ export const Canvas: React.FC<CanvasProps> = ({
   onDeleteNode,
   onDeleteConnection,
   onUpdateConnectionSynergy,
+  onClearPreset,
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
 
@@ -141,6 +147,14 @@ export const Canvas: React.FC<CanvasProps> = ({
           <span className="text-slate-300">|</span>
           <span className="text-slate-400">キャンバスクリックでキャンセル</span>
         </div>
+      )}
+
+      {/* Explanation Panel for presets */}
+      {currentPreset && (
+        <ExplanationPanel
+          explanation={currentPreset.explanation}
+          onClose={onClearPreset}
+        />
       )}
     </div>
   );

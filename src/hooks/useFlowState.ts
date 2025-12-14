@@ -57,6 +57,7 @@ const saveState = (state: FlowState) => {
 export const useFlowState = () => {
   const [state, setState] = useState<FlowState>(loadState);
   const [connectingFrom, setConnectingFrom] = useState<string | null>(null);
+  const [currentPresetId, setCurrentPresetId] = useState<string | null>(null);
 
   // Add new node with custom values
   const addNode = useCallback((input: NodeInput, position: Position) => {
@@ -245,13 +246,20 @@ export const useFlowState = () => {
       setState(preset.data);
       saveState(preset.data);
       setConnectingFrom(null);
+      setCurrentPresetId(presetId);
     }
+  }, []);
+
+  // Clear current preset (called when user modifies the canvas)
+  const clearCurrentPreset = useCallback(() => {
+    setCurrentPresetId(null);
   }, []);
 
   return {
     nodes: state.nodes,
     connections: state.connections,
     connectingFrom,
+    currentPresetId,
     addNode,
     updateNodePosition,
     updateNodeName,
@@ -266,5 +274,6 @@ export const useFlowState = () => {
     clearAll,
     reload,
     loadPreset,
+    clearCurrentPreset,
   };
 };

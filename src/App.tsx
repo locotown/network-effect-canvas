@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Header, Sidebar, Canvas, HelpModal } from './components';
 import { useFlowState } from './hooks/useFlowState';
 import { calculateNetworkValue } from './utils/metcalfe';
+import { PRESETS } from './constants/presets';
 import type { IntegrationLevel, NodeInput, Position } from './types/flow';
 
 function App() {
@@ -9,6 +10,7 @@ function App() {
     nodes,
     connections,
     connectingFrom,
+    currentPresetId,
     addNode,
     updateNodePosition,
     updateNodeValue,
@@ -21,7 +23,13 @@ function App() {
     updateConnectionSynergy,
     clearAll,
     loadPreset,
+    clearCurrentPreset,
   } = useFlowState();
+
+  // Get current preset object from ID
+  const currentPreset = currentPresetId
+    ? PRESETS.find((p) => p.id === currentPresetId) ?? null
+    : null;
 
   // Integration level state (global setting)
   const [integrationLevel, setIntegrationLevel] = useState<IntegrationLevel>('simple');
@@ -79,6 +87,7 @@ function App() {
           connections={connections}
           connectingFrom={connectingFrom}
           pendingNode={pendingNode}
+          currentPreset={currentPreset}
           onDropNode={handleDropNode}
           onUpdateNodePosition={updateNodePosition}
           onUpdateNodeValue={updateNodeValue}
@@ -89,6 +98,7 @@ function App() {
           onDeleteNode={deleteNode}
           onDeleteConnection={deleteConnection}
           onUpdateConnectionSynergy={updateConnectionSynergy}
+          onClearPreset={clearCurrentPreset}
         />
       </div>
 
