@@ -65,7 +65,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center" style={{ gap: '8px' }}>
             <span className="flex items-center text-xs text-slate-700 bg-white/50 backdrop-blur-sm border border-white/40 rounded-full shadow-sm" style={{ gap: '6px', padding: '4px 10px' }}>
               <span className="rounded-full bg-blue-500" style={{ width: '5px', height: '5px' }}></span>
-              {nodeCount} サービス
+              {nodeCount} ノード
             </span>
             <span className="flex items-center text-xs text-slate-700 bg-white/50 backdrop-blur-sm border border-white/40 rounded-full shadow-sm" style={{ gap: '6px', padding: '4px 10px' }}>
               <span className="rounded-full bg-emerald-500" style={{ width: '5px', height: '5px' }}></span>

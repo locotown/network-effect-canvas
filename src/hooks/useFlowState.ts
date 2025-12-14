@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import type { FlowState, Position, SynergyLevel, NodeInput } from '../types/flow';
 import { DEFAULT_NODE_VALUES } from '../constants/nodes';
+import { PRESETS } from '../constants/presets';
 
 const STORAGE_KEY = 'network-effect-canvas';
 
@@ -237,6 +238,16 @@ export const useFlowState = () => {
     setState(loadState());
   }, []);
 
+  // Load preset
+  const loadPreset = useCallback((presetId: string) => {
+    const preset = PRESETS.find((p) => p.id === presetId);
+    if (preset) {
+      setState(preset.data);
+      saveState(preset.data);
+      setConnectingFrom(null);
+    }
+  }, []);
+
   return {
     nodes: state.nodes,
     connections: state.connections,
@@ -254,5 +265,6 @@ export const useFlowState = () => {
     updateConnectionSynergy,
     clearAll,
     reload,
+    loadPreset,
   };
 };

@@ -20,6 +20,7 @@ function App() {
     deleteConnection,
     updateConnectionSynergy,
     clearAll,
+    loadPreset,
   } = useFlowState();
 
   // Integration level state (global setting)
@@ -71,6 +72,7 @@ function App() {
         <Sidebar
           onAddNode={handleAddNode}
           onClear={handleClearAll}
+          onLoadPreset={loadPreset}
         />
         <Canvas
           nodes={nodes}

@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { ICON_OPTIONS, NODE_COLORS, DEFAULT_NODE_VALUES } from '../constants/nodes';
+import { PRESETS } from '../constants/presets';
 import type { NodeInput } from '../types/flow';
 import { formatNumber } from '../utils/metcalfe';
 
 interface SidebarProps {
   onAddNode: (input: NodeInput) => void;
   onClear: () => void;
+  onLoadPreset: (presetId: string) => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ onAddNode, onClear }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ onAddNode, onClear, onLoadPreset }) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [nodeName, setNodeName] = useState('');
   const [selectedIcon, setSelectedIcon] = useState(DEFAULT_NODE_VALUES.icon);
@@ -232,6 +234,29 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddNode, onClear }) => {
           </div>
         </div>
       )}
+
+      {/* Sample Presets */}
+      <div className="glass-light rounded-xl" style={{ padding: '14px', marginBottom: '12px' }}>
+        <p className="text-xs font-medium text-slate-600" style={{ marginBottom: '10px' }}>
+          サンプルを読み込む
+        </p>
+        <div className="flex flex-col" style={{ gap: '6px' }}>
+          {PRESETS.map((preset) => (
+            <button
+              key={preset.id}
+              onClick={() => onLoadPreset(preset.id)}
+              className="w-full flex items-center text-left text-xs bg-white/50 backdrop-blur-sm border border-white/40 rounded-lg hover:bg-white/70 hover:border-blue-200/50 transition-all duration-200 shadow-sm"
+              style={{ padding: '8px 10px', gap: '8px' }}
+            >
+              <span className="text-base flex-shrink-0">{preset.icon}</span>
+              <div className="min-w-0">
+                <div className="font-medium text-slate-700 truncate">{preset.name}</div>
+                <div className="text-[10px] text-slate-500 truncate">{preset.description}</div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Tips card - glass style */}
       <div className="glass-light rounded-xl flex-1" style={{ padding: '14px' }}>
