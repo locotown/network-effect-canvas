@@ -34,19 +34,25 @@ export const ShareMenu: React.FC<ShareMenuProps> = ({
   };
 
   const handleExportImage = async () => {
+    console.log('handleExportImage called, canvasRef.current:', canvasRef.current);
     setIsProcessing(true);
+    onClose(); // Close menu first to allow canvas to be visible
+
+    // Small delay to ensure menu is closed before capturing
+    await new Promise(resolve => setTimeout(resolve, 100));
+
     try {
       const success = await exportCanvasAsImage(canvasRef.current);
       if (success) {
-        showToast('画像を保存しました', 'success');
+        alert('画像を保存しました');
       } else {
-        showToast('画像の保存に失敗しました', 'error');
+        alert('画像の保存に失敗しました。コンソールを確認してください。');
       }
-    } catch {
-      showToast('画像の保存に失敗しました', 'error');
+    } catch (error) {
+      console.error('Export error:', error);
+      alert('画像の保存に失敗しました');
     }
     setIsProcessing(false);
-    onClose();
   };
 
   const handleCopyUrl = async () => {

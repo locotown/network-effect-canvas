@@ -8,20 +8,33 @@ export const exportCanvasAsImage = async (
   element: HTMLElement | null,
   filename?: string
 ): Promise<boolean> => {
-  if (!element) return false;
+  if (!element) {
+    console.error('Export failed: element is null');
+    return false;
+  }
 
   try {
+    console.log('Starting canvas export...', element);
+
     const canvas = await html2canvas(element, {
-      backgroundColor: null,
+      backgroundColor: '#f0f4ff',
       scale: 2,
       useCORS: true,
-      logging: false,
+      logging: true,
+      allowTaint: true,
+      foreignObjectRendering: true,
     });
+
+    console.log('Canvas created:', canvas.width, 'x', canvas.height);
 
     const link = document.createElement('a');
     link.download = filename || `network-canvas-${Date.now()}.png`;
     link.href = canvas.toDataURL('image/png');
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
+
+    console.log('Download triggered');
     return true;
   } catch (error) {
     console.error('Failed to export canvas as image:', error);
