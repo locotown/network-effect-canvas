@@ -1,7 +1,9 @@
-import type { NetworkValue, IntegrationLevel } from '../types/flow';
+import { useState } from 'react';
+import type { NetworkValue, IntegrationLevel, FlowState } from '../types/flow';
 import { formatValue } from '../utils/metcalfe';
 import { INTEGRATION_CONFIGS, INTEGRATION_LEVELS } from '../constants/nodes';
 import { NetworkIcon, ChartIcon } from './icons/ServiceIcons';
+import { ShareMenu } from './ShareMenu';
 
 interface HeaderProps {
   nodeCount: number;
@@ -10,6 +12,9 @@ interface HeaderProps {
   integrationLevel: IntegrationLevel;
   onIntegrationLevelChange: (level: IntegrationLevel) => void;
   onHelpClick: () => void;
+  canvasRef: React.RefObject<HTMLDivElement | null>;
+  flowState: FlowState;
+  onImportState: (state: FlowState) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -19,7 +24,11 @@ export const Header: React.FC<HeaderProps> = ({
   integrationLevel,
   onIntegrationLevelChange,
   onHelpClick,
+  canvasRef,
+  flowState,
+  onImportState,
 }) => {
+  const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
   const hasNodes = nodeCount > 0;
   const hasConnections = connectionCount > 0;
   const showMultiplier = hasNodes && hasConnections && networkValue.multiplier > 1;
@@ -71,6 +80,27 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="rounded-full bg-emerald-500" style={{ width: '5px', height: '5px' }}></span>
               {connectionCount} 接続
             </span>
+          </div>
+
+          {/* Share button */}
+          <div className="relative">
+            <button
+              onClick={() => setIsShareMenuOpen(!isShareMenuOpen)}
+              className="flex items-center gap-1.5 text-xs font-medium text-slate-600 bg-white/50 backdrop-blur-sm border border-white/40 rounded-lg hover:bg-white/70 hover:text-blue-600 transition-all duration-300 shadow-sm"
+              style={{ padding: '6px 12px' }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+              </svg>
+              共有
+            </button>
+            <ShareMenu
+              isOpen={isShareMenuOpen}
+              onClose={() => setIsShareMenuOpen(false)}
+              canvasRef={canvasRef}
+              flowState={flowState}
+              onImport={onImportState}
+            />
           </div>
 
           {/* Help button */}
