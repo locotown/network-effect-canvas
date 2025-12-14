@@ -71,7 +71,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddNode, onClear, onLoadPres
   }, {} as Record<string, typeof ICON_OPTIONS>);
 
   return (
-    <aside className="w-[260px] glass-heavy border-r border-white/30 shadow-glass-sm flex flex-col relative" style={{ padding: '14px' }}>
+    <aside className="w-[260px] glass-heavy border-r border-white/30 shadow-glass-sm flex flex-col relative overflow-y-auto" style={{ padding: '14px' }}>
       <div className="flex items-center gap-2 pb-2 border-b border-white/30" style={{ marginBottom: '10px' }}>
         <h2 className="text-xs font-semibold text-slate-700">
           ノード
