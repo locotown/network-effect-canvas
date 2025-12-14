@@ -34,7 +34,6 @@ export const ShareMenu: React.FC<ShareMenuProps> = ({
   };
 
   const handleExportImage = async () => {
-    console.log('handleExportImage called, canvasRef.current:', canvasRef.current);
     setIsProcessing(true);
     onClose(); // Close menu first to allow canvas to be visible
 
@@ -42,11 +41,9 @@ export const ShareMenu: React.FC<ShareMenuProps> = ({
     await new Promise(resolve => setTimeout(resolve, 100));
 
     try {
-      const success = await exportCanvasAsImage(canvasRef.current);
-      if (success) {
-        alert('画像を保存しました');
-      } else {
-        alert('画像の保存に失敗しました。コンソールを確認してください。');
+      const success = await exportCanvasAsImage(canvasRef.current, flowState);
+      if (!success) {
+        // Error already shown via alert in exportCanvasAsImage
       }
     } catch (error) {
       console.error('Export error:', error);

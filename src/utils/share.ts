@@ -1,11 +1,40 @@
 import html2canvas from 'html2canvas';
-import type { FlowState } from '../types/flow';
+import type { FlowState, FlowNode } from '../types/flow';
+
+/**
+ * Calculate bounding box of all nodes
+ */
+const calculateNodesBoundingBox = (nodes: FlowNode[], padding = 50, nodeWidth = 240, nodeHeight = 200) => {
+  if (nodes.length === 0) {
+    return { x: 0, y: 0, width: 800, height: 600 };
+  }
+
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+
+  for (const node of nodes) {
+    minX = Math.min(minX, node.position.x);
+    minY = Math.min(minY, node.position.y);
+    maxX = Math.max(maxX, node.position.x + nodeWidth);
+    maxY = Math.max(maxY, node.position.y + nodeHeight);
+  }
+
+  return {
+    x: Math.max(0, minX - padding),
+    y: Math.max(0, minY - padding),
+    width: maxX - minX + nodeWidth + padding * 2,
+    height: maxY - minY + nodeHeight + padding * 2,
+  };
+};
 
 /**
  * Export canvas as PNG image
  */
 export const exportCanvasAsImage = async (
   element: HTMLElement | null,
+  flowState: FlowState,
   filename?: string
 ): Promise<boolean> => {
   if (!element) {
@@ -13,16 +42,28 @@ export const exportCanvasAsImage = async (
     return false;
   }
 
+  if (flowState.nodes.length === 0) {
+    alert('エクスポートするノードがありません');
+    return false;
+  }
+
   try {
-    console.log('Starting canvas export...', element);
+    // Calculate the bounding box of nodes
+    const bounds = calculateNodesBoundingBox(flowState.nodes);
+    console.log('Calculated bounds:', bounds);
 
     const canvas = await html2canvas(element, {
       backgroundColor: '#f0f4ff',
       scale: 2,
       useCORS: true,
-      logging: true,
+      logging: false,
       allowTaint: true,
-      foreignObjectRendering: true,
+      x: bounds.x,
+      y: bounds.y,
+      width: bounds.width,
+      height: bounds.height,
+      scrollX: -bounds.x,
+      scrollY: -bounds.y,
     });
 
     console.log('Canvas created:', canvas.width, 'x', canvas.height);
@@ -34,7 +75,6 @@ export const exportCanvasAsImage = async (
     link.click();
     document.body.removeChild(link);
 
-    console.log('Download triggered');
     return true;
   } catch (error) {
     console.error('Failed to export canvas as image:', error);
