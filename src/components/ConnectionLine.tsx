@@ -142,7 +142,7 @@ export const ConnectionLine: React.FC<ConnectionLineProps> = ({
             }}
           >
             <div className="px-3 py-1.5 bg-white/30 border-b border-white/30">
-              <span className="text-[10px] font-medium text-slate-600">Synergy Level</span>
+              <span className="text-[10px] font-medium text-slate-600">シナジーレベル</span>
             </div>
             {SYNERGY_LEVELS.map((level) => (
               <button

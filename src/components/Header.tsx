@@ -9,6 +9,7 @@ interface HeaderProps {
   networkValue: NetworkValue;
   integrationLevel: IntegrationLevel;
   onIntegrationLevelChange: (level: IntegrationLevel) => void;
+  onHelpClick: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -17,6 +18,7 @@ export const Header: React.FC<HeaderProps> = ({
   networkValue,
   integrationLevel,
   onIntegrationLevelChange,
+  onHelpClick,
 }) => {
   const hasNodes = nodeCount > 0;
   const hasConnections = connectionCount > 0;
@@ -33,10 +35,10 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
           <div className="min-w-0">
             <h1 className="text-sm font-semibold text-slate-800 leading-tight">
-              Network Effect Canvas
+              ネットワーク効果キャンバス
             </h1>
             <span className="text-[11px] text-slate-500 leading-tight">
-              Strategic Network Visualizer
+              戦略的ネットワーク可視化ツール
             </span>
           </div>
         </div>
@@ -44,7 +46,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center" style={{ gap: '12px' }}>
           {/* Integration Level Selector */}
           <div className="flex items-center" style={{ gap: '8px' }}>
-            <span className="text-xs text-slate-600">Integration</span>
+            <span className="text-xs text-slate-600">統合レベル</span>
             <select
               value={integrationLevel}
               onChange={(e) => onIntegrationLevelChange(e.target.value as IntegrationLevel)}
@@ -63,13 +65,25 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center" style={{ gap: '8px' }}>
             <span className="flex items-center text-xs text-slate-700 bg-white/50 backdrop-blur-sm border border-white/40 rounded-full shadow-sm" style={{ gap: '6px', padding: '4px 10px' }}>
               <span className="rounded-full bg-blue-500" style={{ width: '5px', height: '5px' }}></span>
-              {nodeCount} services
+              {nodeCount} サービス
             </span>
             <span className="flex items-center text-xs text-slate-700 bg-white/50 backdrop-blur-sm border border-white/40 rounded-full shadow-sm" style={{ gap: '6px', padding: '4px 10px' }}>
               <span className="rounded-full bg-emerald-500" style={{ width: '5px', height: '5px' }}></span>
-              {connectionCount} connections
+              {connectionCount} 接続
             </span>
           </div>
+
+          {/* Help button */}
+          <button
+            onClick={onHelpClick}
+            className="flex items-center gap-1.5 text-xs font-medium text-slate-600 bg-white/50 backdrop-blur-sm border border-white/40 rounded-lg hover:bg-white/70 hover:text-blue-600 transition-all duration-300 shadow-sm"
+            style={{ padding: '6px 12px' }}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            ヘルプ
+          </button>
         </div>
       </div>
 
@@ -79,7 +93,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center justify-center" style={{ gap: '12px' }}>
             {/* Standalone Value - glass card */}
             <div className="glass rounded-xl shadow-sm" style={{ padding: '10px 20px' }}>
-              <div className="text-xs font-medium text-slate-500" style={{ marginBottom: '2px' }}>Standalone Value</div>
+              <div className="text-xs font-medium text-slate-500" style={{ marginBottom: '2px' }}>単体価値</div>
               <div className="text-lg font-semibold text-slate-800">
                 {formatValue(networkValue.standaloneValue)}
               </div>
@@ -100,7 +114,7 @@ export const Header: React.FC<HeaderProps> = ({
             {hasConnections && (
               <div className="rounded-xl shadow-sm bg-blue-500/80 backdrop-blur-xl border border-blue-400/50" style={{ padding: '10px 20px' }}>
                 <div className="text-xs font-medium text-blue-100" style={{ marginBottom: '2px' }}>
-                  Connected Value x{currentIntegration.coefficient.toFixed(1)}
+                  接続価値 x{currentIntegration.coefficient.toFixed(1)}
                 </div>
                 <div className="text-lg font-semibold text-white">
                   {formatValue(networkValue.connectedValue)}
@@ -114,14 +128,14 @@ export const Header: React.FC<HeaderProps> = ({
                 <div className="text-lg font-bold text-white">
                   {networkValue.multiplier.toFixed(1)}x
                 </div>
-                <span className="text-xs font-medium text-emerald-100 bg-white/20 rounded-full" style={{ padding: '2px 6px' }}>UP</span>
+                <span className="text-xs font-medium text-emerald-100 bg-white/20 rounded-full" style={{ padding: '2px 6px' }}>上昇</span>
               </div>
             )}
 
             {/* No connections hint */}
             {!hasConnections && (
               <div className="flex items-center text-xs text-slate-500 bg-white/30 backdrop-blur-sm rounded-full border border-white/40" style={{ padding: '6px 12px', gap: '4px' }}>
-                <span>Connect nodes to see network effects</span>
+                <span>ノードを接続してネットワーク効果を確認</span>
               </div>
             )}
           </div>

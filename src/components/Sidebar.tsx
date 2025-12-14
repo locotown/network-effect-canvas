@@ -63,7 +63,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddNode, onClear }) => {
     <aside className="w-[260px] glass-heavy border-r border-white/30 shadow-glass-sm flex flex-col relative" style={{ padding: '14px' }}>
       <div className="flex items-center gap-2 pb-2 border-b border-white/30" style={{ marginBottom: '10px' }}>
         <h2 className="text-xs font-semibold text-slate-700">
-          Nodes
+          ノード
         </h2>
       </div>
 
@@ -235,7 +235,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddNode, onClear }) => {
 
       {/* Tips card - glass style */}
       <div className="glass-light rounded-xl flex-1" style={{ padding: '14px' }}>
-        <p className="text-xs font-medium text-slate-600" style={{ marginBottom: '8px' }}>Quick Start</p>
+        <p className="text-xs font-medium text-slate-600" style={{ marginBottom: '8px' }}>使い方</p>
         <div className="text-xs text-slate-500" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <p className="flex items-center" style={{ gap: '8px' }}>
             <span
@@ -275,7 +275,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddNode, onClear }) => {
           className="w-full text-sm font-medium text-slate-500 bg-white/40 backdrop-blur-sm border border-white/40 rounded-xl hover:text-red-500 hover:bg-red-50/50 hover:border-red-200/50 transition-all duration-300 shadow-sm"
           style={{ padding: '10px 16px' }}
         >
-          Clear All
+          すべてクリア
         </button>
       </div>
     </aside>

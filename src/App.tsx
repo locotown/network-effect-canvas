@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Header, Sidebar, Canvas } from './components';
+import { Header, Sidebar, Canvas, HelpModal } from './components';
 import { useFlowState } from './hooks/useFlowState';
 import { calculateNetworkValue } from './utils/metcalfe';
 import type { IntegrationLevel, NodeInput, Position } from './types/flow';
@@ -27,6 +27,9 @@ function App() {
 
   // Pending node state (waiting to be placed on canvas)
   const [pendingNode, setPendingNode] = useState<{ input: NodeInput } | null>(null);
+
+  // Help modal state
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   // Calculate network value using extended Metcalfe's Law
   const networkValue = useMemo(
@@ -61,6 +64,7 @@ function App() {
         networkValue={networkValue}
         integrationLevel={integrationLevel}
         onIntegrationLevelChange={setIntegrationLevel}
+        onHelpClick={() => setIsHelpOpen(true)}
       />
 
       <div className="flex-1 flex overflow-hidden">
@@ -86,6 +90,9 @@ function App() {
         />
       </div>
 
+      {/* Help Modal */}
+      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+
       {/* Mobile warning - Liquid Glass style */}
       <div className="md:hidden fixed inset-0 bg-gradient-to-br from-indigo-300 via-purple-300 to-pink-300 z-50 flex items-center justify-center p-8">
         <div className="glass-heavy text-center rounded-3xl p-10 shadow-glass-lg relative overflow-hidden">
@@ -99,7 +106,7 @@ function App() {
             デスクトップ推奨
           </h2>
           <p className="text-slate-600 text-sm leading-relaxed">
-            Network Effect Canvasは<br />
+            ネットワーク効果キャンバスは<br />
             タブレットまたはデスクトップで<br />
             ご利用ください。
           </p>
