@@ -94,9 +94,9 @@ const mercariPreset: Preset = {
     title: 'メルカリの両面市場効果',
     summary: 'フリマアプリの「間接ネットワーク効果」の例です。出品者と購入者という2つの異なるグループが互いに価値を高め合う「両面市場」を形成しています。',
     points: [
-      '出品者 ↔ 購入者：出品者が増えると商品が増え、購入者が集まり、さらに出品者が増える好循環',
-      '商品 → メルカリ便：取引量増加で物流インフラの価値が向上',
-      '商品 → メルペイ：取引で得た売上金を決済に活用できる仕組み',
+      '出品者 → 購入者：出品者が増えると商品が増え、購入者が集まる好循環',
+      '両者 → 商品：出品・購入により商品数が増加',
+      '商品 → メルカリ便・メルペイ：取引量増加で周辺サービスの価値が向上',
     ],
     networkEffect: '間接ネットワーク効果：異なるグループ間で相互に価値が高まる両面市場',
   },
@@ -159,7 +159,6 @@ const mercariPreset: Preset = {
       { id: 'c3', sourceId: 'mercari-listings', targetId: 'mercari-logistics', synergy: 'good' as SynergyLevel },
       { id: 'c4', sourceId: 'mercari-listings', targetId: 'mercari-payment', synergy: 'good' as SynergyLevel },
       { id: 'c5', sourceId: 'mercari-sellers', targetId: 'mercari-buyers', synergy: 'excellent' as SynergyLevel },
-      { id: 'c5b', sourceId: 'mercari-buyers', targetId: 'mercari-sellers', synergy: 'excellent' as SynergyLevel },
     ],
   },
 };
@@ -174,8 +173,8 @@ const uberPreset: Preset = {
     title: 'Uberの両面市場効果',
     summary: 'ライドシェアの「間接ネットワーク効果」の例です。ドライバーが増えると待ち時間が短くなり乗客が増加、乗客が増えるとドライバーの収入が増え、さらにドライバーが増える好循環が生まれます。',
     points: [
-      'ドライバー ↔ 乗客：ドライバー増加で待ち時間短縮、乗客増加で収入向上',
-      'ドライバー → Uber Eats：配車の空き時間にフードデリバリーで収入を得られる',
+      'ドライバー → 乗客・Uber Eats：ドライバー増加で待ち時間短縮、配達も可能に',
+      '乗客 → Uber Eats：ライドシェア利用者がフードデリバリーも利用',
       'Uber Eats → レストラン：デリバリー需要の増加で加盟店が増加',
     ],
     networkEffect: '間接ネットワーク効果 + プラットフォーム拡張：複数サービスでドライバーを共有',
@@ -225,7 +224,6 @@ const uberPreset: Preset = {
     ],
     connections: [
       { id: 'c1', sourceId: 'uber-drivers', targetId: 'uber-riders', synergy: 'excellent' as SynergyLevel },
-      { id: 'c1b', sourceId: 'uber-riders', targetId: 'uber-drivers', synergy: 'excellent' as SynergyLevel },
       { id: 'c2', sourceId: 'uber-drivers', targetId: 'uber-eats', synergy: 'excellent' as SynergyLevel },
       { id: 'c3', sourceId: 'uber-riders', targetId: 'uber-eats', synergy: 'good' as SynergyLevel },
       { id: 'c4', sourceId: 'uber-eats', targetId: 'uber-merchants', synergy: 'excellent' as SynergyLevel },

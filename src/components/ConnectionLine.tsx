@@ -21,19 +21,77 @@ export const ConnectionLine: React.FC<ConnectionLineProps> = ({
 
   if (!sourceNode || !targetNode) return null;
 
-  // Calculate center points of nodes
-  const sourceX = sourceNode.position.x + CANVAS_CONFIG.nodeWidth;
-  const sourceY = sourceNode.position.y + CANVAS_CONFIG.nodeHeight / 2;
-  const targetX = targetNode.position.x;
-  const targetY = targetNode.position.y + CANVAS_CONFIG.nodeHeight / 2;
+  // Calculate node centers
+  const sourceCenterX = sourceNode.position.x + CANVAS_CONFIG.nodeWidth / 2;
+  const sourceCenterY = sourceNode.position.y + CANVAS_CONFIG.nodeHeight / 2;
+  const targetCenterX = targetNode.position.x + CANVAS_CONFIG.nodeWidth / 2;
+  const targetCenterY = targetNode.position.y + CANVAS_CONFIG.nodeHeight / 2;
+
+  // Calculate direction from source to target
+  const deltaX = targetCenterX - sourceCenterX;
+  const deltaY = targetCenterY - sourceCenterY;
+
+  // Determine connection points based on relative position
+  type Edge = 'top' | 'bottom' | 'left' | 'right';
+  let sourceEdge: Edge;
+  let targetEdge: Edge;
+
+  // Use the axis with greater distance to determine primary direction
+  if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    // Horizontal connection
+    if (deltaX > 0) {
+      sourceEdge = 'right';
+      targetEdge = 'left';
+    } else {
+      sourceEdge = 'left';
+      targetEdge = 'right';
+    }
+  } else {
+    // Vertical connection
+    if (deltaY > 0) {
+      sourceEdge = 'bottom';
+      targetEdge = 'top';
+    } else {
+      sourceEdge = 'top';
+      targetEdge = 'bottom';
+    }
+  }
+
+  // Calculate actual connection points
+  const getEdgePoint = (node: typeof sourceNode, edge: Edge) => {
+    const x = node.position.x;
+    const y = node.position.y;
+    const w = CANVAS_CONFIG.nodeWidth;
+    const h = CANVAS_CONFIG.nodeHeight;
+
+    switch (edge) {
+      case 'top':
+        return { x: x + w / 2, y: y };
+      case 'bottom':
+        return { x: x + w / 2, y: y + h };
+      case 'left':
+        return { x: x, y: y + h / 2 };
+      case 'right':
+        return { x: x + w, y: y + h / 2 };
+    }
+  };
+
+  const sourcePoint = getEdgePoint(sourceNode, sourceEdge);
+  const targetPoint = getEdgePoint(targetNode, targetEdge);
+
+  const sourceX = sourcePoint.x;
+  const sourceY = sourcePoint.y;
+  const targetX = targetPoint.x;
+  const targetY = targetPoint.y;
 
   // Calculate midpoint for synergy badge and delete button
   const midX = (sourceX + targetX) / 2;
   const midY = (sourceY + targetY) / 2;
 
-  // Calculate control points for bezier curve
-  const dx = Math.abs(targetX - sourceX);
-  const controlOffset = Math.min(dx * 0.5, 100);
+  // Calculate control points for bezier curve based on connection direction
+  const isHorizontal = sourceEdge === 'left' || sourceEdge === 'right';
+  const distance = Math.sqrt(Math.pow(targetX - sourceX, 2) + Math.pow(targetY - sourceY, 2));
+  const controlOffset = Math.min(distance * 0.4, 80);
 
   const synergyConfig = SYNERGY_CONFIGS[connection.synergy];
 
@@ -78,39 +136,70 @@ export const ConnectionLine: React.FC<ConnectionLineProps> = ({
         </filter>
       </defs>
 
-      {/* Glow path (behind) */}
-      <path
-        d={`M ${sourceX} ${sourceY}
-            C ${sourceX + controlOffset} ${sourceY},
-              ${targetX - controlOffset} ${targetY},
-              ${targetX} ${targetY}`}
-        fill="none"
-        stroke={color}
-        strokeWidth="6"
-        strokeLinecap="round"
-        opacity="0.15"
-      />
+      {/* Calculate bezier control points based on direction */}
+      {(() => {
+        let ctrl1X: number, ctrl1Y: number, ctrl2X: number, ctrl2Y: number;
 
-      {/* Main path */}
-      <path
-        d={`M ${sourceX} ${sourceY}
-            C ${sourceX + controlOffset} ${sourceY},
-              ${targetX - controlOffset} ${targetY},
-              ${targetX} ${targetY}`}
-        fill="none"
-        stroke={`url(#${gradientId})`}
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        className="transition-colors duration-300"
-      />
+        if (isHorizontal) {
+          // Horizontal: control points extend horizontally
+          const dir = sourceEdge === 'right' ? 1 : -1;
+          ctrl1X = sourceX + controlOffset * dir;
+          ctrl1Y = sourceY;
+          ctrl2X = targetX - controlOffset * dir;
+          ctrl2Y = targetY;
+        } else {
+          // Vertical: control points extend vertically
+          const dir = sourceEdge === 'bottom' ? 1 : -1;
+          ctrl1X = sourceX;
+          ctrl1Y = sourceY + controlOffset * dir;
+          ctrl2X = targetX;
+          ctrl2Y = targetY - controlOffset * dir;
+        }
 
-      {/* Arrow head */}
-      <polygon
-        points={`${targetX},${targetY} ${targetX - 10},${targetY - 5} ${targetX - 10},${targetY + 5}`}
-        fill={color}
-        opacity="0.8"
-        className="transition-colors duration-300"
-      />
+        const pathD = `M ${sourceX} ${sourceY} C ${ctrl1X} ${ctrl1Y}, ${ctrl2X} ${ctrl2Y}, ${targetX} ${targetY}`;
+
+        // Calculate arrow rotation based on target edge
+        let arrowRotation = 0;
+        switch (targetEdge) {
+          case 'left': arrowRotation = 0; break;
+          case 'right': arrowRotation = 180; break;
+          case 'top': arrowRotation = 90; break;
+          case 'bottom': arrowRotation = -90; break;
+        }
+
+        return (
+          <>
+            {/* Glow path (behind) */}
+            <path
+              d={pathD}
+              fill="none"
+              stroke={color}
+              strokeWidth="6"
+              strokeLinecap="round"
+              opacity="0.15"
+            />
+
+            {/* Main path */}
+            <path
+              d={pathD}
+              fill="none"
+              stroke={`url(#${gradientId})`}
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              className="transition-colors duration-300"
+            />
+
+            {/* Arrow head */}
+            <polygon
+              points="0,0 -10,-5 -10,5"
+              fill={color}
+              opacity="0.8"
+              className="transition-colors duration-300"
+              transform={`translate(${targetX}, ${targetY}) rotate(${arrowRotation})`}
+            />
+          </>
+        );
+      })()}
 
       {/* Synergy badge - glass style using foreignObject */}
       <foreignObject x={midX - 22} y={midY - 10} width="44" height="20">
