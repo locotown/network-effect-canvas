@@ -50,27 +50,43 @@ export const exportCanvasAsImage = async (
   try {
     // Calculate the bounding box of nodes
     const bounds = calculateNodesBoundingBox(flowState.nodes);
-    console.log('Calculated bounds:', bounds);
+    const scale = 2;
 
-    const canvas = await html2canvas(element, {
+    // Capture the full canvas
+    const fullCanvas = await html2canvas(element, {
       backgroundColor: '#f0f4ff',
-      scale: 2,
+      scale: scale,
       useCORS: true,
       logging: false,
       allowTaint: true,
-      x: bounds.x,
-      y: bounds.y,
-      width: bounds.width,
-      height: bounds.height,
-      scrollX: -bounds.x,
-      scrollY: -bounds.y,
     });
 
-    console.log('Canvas created:', canvas.width, 'x', canvas.height);
+    // Create a cropped canvas
+    const croppedCanvas = document.createElement('canvas');
+    croppedCanvas.width = bounds.width * scale;
+    croppedCanvas.height = bounds.height * scale;
+
+    const ctx = croppedCanvas.getContext('2d');
+    if (!ctx) {
+      throw new Error('Failed to get canvas context');
+    }
+
+    // Draw the cropped region
+    ctx.drawImage(
+      fullCanvas,
+      bounds.x * scale,
+      bounds.y * scale,
+      bounds.width * scale,
+      bounds.height * scale,
+      0,
+      0,
+      bounds.width * scale,
+      bounds.height * scale
+    );
 
     const link = document.createElement('a');
     link.download = filename || `network-canvas-${Date.now()}.png`;
-    link.href = canvas.toDataURL('image/png');
+    link.href = croppedCanvas.toDataURL('image/png');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -78,6 +94,7 @@ export const exportCanvasAsImage = async (
     return true;
   } catch (error) {
     console.error('Failed to export canvas as image:', error);
+    alert('画像の保存に失敗しました');
     return false;
   }
 };
