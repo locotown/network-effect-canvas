@@ -47,6 +47,15 @@ export const Header: React.FC<HeaderProps> = ({
             <NetworkIcon style={{ width: '16px', height: '16px' }} className="text-slate-600" />
           </div>
           <div className="min-w-0">
+            <h1 className="text-sm font-semibold text-slate-800 leading-tight">
+              ネットワーク効果キャンバス
+            </h1>
+            <span className="text-[11px] text-slate-500 leading-tight">
+              戦略的ネットワーク可視化ツール
+            </span>
+          </div>
+          {/* Canvas Name - Editable */}
+          <div className="border-l border-slate-300/50 pl-3 ml-2">
             {isEditingName ? (
               <div className="flex items-center gap-1">
                 <input
@@ -62,8 +71,8 @@ export const Header: React.FC<HeaderProps> = ({
                       setIsEditingName(false);
                     }
                   }}
-                  className="text-sm font-semibold text-slate-800 bg-white/60 border border-blue-300 rounded px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  style={{ minWidth: '120px', maxWidth: '200px' }}
+                  className="text-xs text-slate-700 bg-white/60 border border-blue-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  style={{ minWidth: '100px', maxWidth: '180px' }}
                   autoFocus
                 />
                 <button
@@ -73,7 +82,7 @@ export const Header: React.FC<HeaderProps> = ({
                   }}
                   className="p-1 text-emerald-600 hover:bg-emerald-100 rounded"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </button>
@@ -84,29 +93,29 @@ export const Header: React.FC<HeaderProps> = ({
                   }}
                   className="p-1 text-slate-500 hover:bg-slate-100 rounded"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
             ) : (
-              <h1
-                className="text-sm font-semibold text-slate-800 leading-tight cursor-pointer hover:text-blue-600 transition-colors group flex items-center gap-1"
+              <button
+                className="flex items-center gap-1.5 text-xs text-slate-600 bg-white/40 hover:bg-white/60 border border-white/50 rounded-lg px-2.5 py-1 transition-all group"
                 onClick={() => {
                   setEditingName(canvasName);
                   setIsEditingName(true);
                 }}
                 title="クリックして編集"
               >
-                {canvasName}
-                <svg className="w-3 h-3 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span className="font-medium">{canvasName}</span>
+                <svg className="w-2.5 h-2.5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                 </svg>
-              </h1>
+              </button>
             )}
-            <span className="text-[11px] text-slate-500 leading-tight">
-              戦略的ネットワーク可視化ツール
-            </span>
           </div>
         </div>
 

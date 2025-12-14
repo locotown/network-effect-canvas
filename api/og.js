@@ -329,15 +329,15 @@ export default async function handler(request) {
                             {
                               type: 'h1',
                               props: {
-                                style: { fontSize: 32, fontWeight: 'bold', color: '#1e293b', margin: 0 },
-                                children: canvasName,
+                                style: { fontSize: 28, fontWeight: 'bold', color: '#1e293b', margin: 0 },
+                                children: 'ネットワーク効果キャンバス',
                               },
                             },
                             {
                               type: 'p',
                               props: {
-                                style: { fontSize: 18, color: '#64748b', margin: 0 },
-                                children: 'ネットワーク効果キャンバス',
+                                style: { fontSize: 16, color: '#64748b', margin: 0, marginTop: 4 },
+                                children: canvasName,
                               },
                             },
                           ],
