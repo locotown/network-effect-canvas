@@ -59,10 +59,10 @@ export const findConnectedGroups = (
 };
 
 /**
- * Get effective user count (considering active rate)
+ * Get effective value (considering active rate)
  */
-export const getEffectiveUsers = (node: FlowNode): number => {
-  return node.userCount * node.activeRate;
+export const getEffectiveValue = (node: FlowNode): number => {
+  return node.value * node.activeRate;
 };
 
 /**
@@ -95,8 +95,8 @@ const calculateGroupSynergy = (
  * Calculate network value using extended Metcalfe's Law
  *
  * Extended formula:
- * - Standalone value: Σ(effectiveUsers²)
- * - Connected value: Σ((Σ effectiveUsers)² × avgSynergy × integrationCoeff)
+ * - Standalone value: Σ(effectiveValue²)
+ * - Connected value: Σ((Σ effectiveValue)² × avgSynergy × integrationCoeff)
  */
 export const calculateNetworkValue = (
   nodes: FlowNode[],
@@ -109,10 +109,10 @@ export const calculateNetworkValue = (
 
   const integrationCoeff = INTEGRATION_CONFIGS[integrationLevel].coefficient;
 
-  // 1. Standalone value (each service independent, with active rate)
+  // 1. Standalone value (each node independent, with active rate)
   const standaloneValue = nodes.reduce((sum, node) => {
-    const effectiveUsers = getEffectiveUsers(node);
-    return sum + Math.pow(effectiveUsers, 2);
+    const effectiveValue = getEffectiveValue(node);
+    return sum + Math.pow(effectiveValue, 2);
   }, 0);
 
   // 2. Find connected groups
@@ -120,10 +120,10 @@ export const calculateNetworkValue = (
 
   // 3. Calculate connected value for each group
   const connectedValue = groups.reduce((sum, groupNodeIds) => {
-    // Sum effective users in group
-    const totalEffectiveUsers = groupNodeIds.reduce((s, nodeId) => {
+    // Sum effective values in group
+    const totalEffectiveValue = groupNodeIds.reduce((s, nodeId) => {
       const node = nodes.find((n) => n.id === nodeId);
-      return s + (node ? getEffectiveUsers(node) : 0);
+      return s + (node ? getEffectiveValue(node) : 0);
     }, 0);
 
     // Get average synergy for this group
@@ -138,10 +138,10 @@ export const calculateNetworkValue = (
     );
 
     if (hasConnections) {
-      return sum + Math.pow(totalEffectiveUsers, 2) * avgSynergy * integrationCoeff;
+      return sum + Math.pow(totalEffectiveValue, 2) * avgSynergy * integrationCoeff;
     } else {
       // Single node group - no synergy or integration bonus
-      return sum + Math.pow(totalEffectiveUsers, 2);
+      return sum + Math.pow(totalEffectiveValue, 2);
     }
   }, 0);
 
@@ -172,9 +172,9 @@ export const formatValue = (value: number): string => {
 };
 
 /**
- * Format user count for display
+ * Format number for display
  */
-export const formatUserCount = (count: number): string => {
+export const formatNumber = (count: number): string => {
   if (count >= 1_000_000) {
     return `${(count / 1_000_000).toFixed(1)}M`;
   }

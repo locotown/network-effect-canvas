@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import type { FlowNode, Connection, NodeType, Position, SynergyLevel } from '../types/flow';
+import type { FlowNode, Connection, Position, SynergyLevel } from '../types/flow';
 import { Node } from './Node';
 import { ConnectionLine } from './ConnectionLine';
 import { NetworkIcon } from './icons/ServiceIcons';
@@ -8,9 +8,10 @@ interface CanvasProps {
   nodes: FlowNode[];
   connections: Connection[];
   connectingFrom: string | null;
-  onAddNode: (type: NodeType, position: Position) => void;
+  pendingNode: { input: any } | null;
+  onDropNode: (position: Position) => void;
   onUpdateNodePosition: (id: string, position: Position) => void;
-  onUpdateNodeUserCount: (id: string, userCount: number) => void;
+  onUpdateNodeValue: (id: string, value: number) => void;
   onUpdateNodeActiveRate: (id: string, activeRate: number) => void;
   onStartConnection: (id: string) => void;
   onCompleteConnection: (id: string) => void;
@@ -24,9 +25,10 @@ export const Canvas: React.FC<CanvasProps> = ({
   nodes,
   connections,
   connectingFrom,
-  onAddNode,
+  pendingNode,
+  onDropNode,
   onUpdateNodePosition,
-  onUpdateNodeUserCount,
+  onUpdateNodeValue,
   onUpdateNodeActiveRate,
   onStartConnection,
   onCompleteConnection,
@@ -37,28 +39,20 @@ export const Canvas: React.FC<CanvasProps> = ({
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'copy';
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    const nodeType = e.dataTransfer.getData('nodeType') as NodeType;
-    if (!nodeType || !canvasRef.current) return;
-
-    const rect = canvasRef.current.getBoundingClientRect();
-    const position = {
-      x: e.clientX - rect.left - 80,
-      y: e.clientY - rect.top - 40,
-    };
-
-    onAddNode(nodeType, position);
-  };
-
-  const handleCanvasClick = () => {
+  const handleCanvasClick = (e: React.MouseEvent) => {
     if (connectingFrom) {
       onCancelConnection();
+      return;
+    }
+
+    // If there's a pending node, place it where clicked
+    if (pendingNode && canvasRef.current) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const position = {
+        x: e.clientX - rect.left - 120, // Center the node
+        y: e.clientY - rect.top - 60,
+      };
+      onDropNode(position);
     }
   };
 
@@ -66,9 +60,7 @@ export const Canvas: React.FC<CanvasProps> = ({
     <div
       ref={canvasRef}
       onClick={handleCanvasClick}
-      onDragOver={handleDragOver}
-      onDrop={handleDrop}
-      className="flex-1 relative overflow-hidden"
+      className={`flex-1 relative overflow-hidden ${pendingNode ? 'cursor-crosshair' : ''}`}
       style={{
         background: 'linear-gradient(135deg, #e0e7ff 0%, #fce7f3 35%, #dbeafe 65%, #f3e8ff 100%)',
       }}
@@ -105,7 +97,7 @@ export const Canvas: React.FC<CanvasProps> = ({
           isConnecting={!!connectingFrom}
           isConnectionSource={connectingFrom === node.id}
           onPositionChange={onUpdateNodePosition}
-          onUserCountChange={onUpdateNodeUserCount}
+          onValueChange={onUpdateNodeValue}
           onActiveRateChange={onUpdateNodeActiveRate}
           onStartConnection={onStartConnection}
           onCompleteConnection={onCompleteConnection}
@@ -114,17 +106,28 @@ export const Canvas: React.FC<CanvasProps> = ({
       ))}
 
       {/* Empty state - glass card */}
-      {nodes.length === 0 && (
+      {nodes.length === 0 && !pendingNode && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="glass rounded-xl shadow-glass text-center" style={{ padding: '24px 32px' }}>
             <div className="mx-auto rounded-xl bg-white/50 backdrop-blur-sm border border-white/50 flex items-center justify-center shadow-sm" style={{ width: '48px', height: '48px', marginBottom: '12px' }}>
               <NetworkIcon style={{ width: '24px', height: '24px' }} className="text-slate-500" />
             </div>
             <p className="text-sm font-semibold text-slate-700" style={{ marginBottom: '6px' }}>
-              Drag services here
+              ノードを追加しましょう
             </p>
             <p className="text-xs text-slate-500">
-              Connect nodes to visualize network effects
+              左メニューから「新規ノードを追加」をクリック
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Pending node indicator */}
+      {pendingNode && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="glass-heavy rounded-xl shadow-glass-lg text-center animate-pulse" style={{ padding: '16px 24px' }}>
+            <p className="text-sm font-medium text-slate-700">
+              キャンバスをクリックしてノードを配置
             </p>
           </div>
         </div>
@@ -134,9 +137,9 @@ export const Canvas: React.FC<CanvasProps> = ({
       {connectingFrom && (
         <div className="absolute left-1/2 -translate-x-1/2 glass-heavy rounded-full shadow-glass-lg flex items-center text-xs font-medium" style={{ bottom: '12px', padding: '8px 16px', gap: '8px' }}>
           <span className="rounded-full bg-blue-500 animate-pulse" style={{ width: '6px', height: '6px' }}></span>
-          <span className="text-slate-700">Click another node to connect</span>
+          <span className="text-slate-700">接続先のノードをクリック</span>
           <span className="text-slate-300">|</span>
-          <span className="text-slate-400">Click to cancel</span>
+          <span className="text-slate-400">キャンバスクリックでキャンセル</span>
         </div>
       )}
     </div>

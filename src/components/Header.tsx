@@ -33,10 +33,10 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
           <div className="min-w-0">
             <h1 className="text-sm font-semibold text-slate-800 leading-tight">
-              Network Value Canvas
+              Network Effect Canvas
             </h1>
             <span className="text-[11px] text-slate-500 leading-tight">
-              Metcalfe's Law Visualizer
+              Strategic Network Visualizer
             </span>
           </div>
         </div>

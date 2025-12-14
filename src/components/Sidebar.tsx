@@ -1,105 +1,240 @@
-import { NODE_TYPES } from '../constants/nodes';
-import type { NodeType } from '../types/flow';
-import { formatUserCount } from '../utils/metcalfe';
-import { ServiceIcon } from './icons/ServiceIcons';
+import { useState } from 'react';
+import { ICON_OPTIONS, NODE_COLORS, DEFAULT_NODE_VALUES } from '../constants/nodes';
+import type { NodeInput } from '../types/flow';
+import { formatNumber } from '../utils/metcalfe';
 
 interface SidebarProps {
+  onAddNode: (input: NodeInput) => void;
   onClear: () => void;
 }
 
-// Service-specific background colors
-const getServiceBackground = (type: NodeType) => {
-  switch (type) {
-    case 'locokau':
-      return 'bg-red-50/80 hover:bg-red-100/70';
-    case 'homestay':
-      return 'bg-rose-50/80 hover:bg-rose-100/70';
-    case 'carshare':
-      return 'bg-emerald-50/80 hover:bg-emerald-100/70';
-    case 'skillshare':
-      return 'bg-amber-50/80 hover:bg-amber-100/70';
-    default:
-      return 'bg-white/50 hover:bg-white/70';
-  }
-};
+export const Sidebar: React.FC<SidebarProps> = ({ onAddNode, onClear }) => {
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [nodeName, setNodeName] = useState('');
+  const [selectedIcon, setSelectedIcon] = useState(DEFAULT_NODE_VALUES.icon);
+  const [selectedColor, setSelectedColor] = useState(DEFAULT_NODE_VALUES.color);
+  const [nodeValue, setNodeValue] = useState(DEFAULT_NODE_VALUES.value.toString());
+  const [valueLabel, setValueLabel] = useState(DEFAULT_NODE_VALUES.valueLabel);
 
-// Service-specific border colors
-const getServiceBorder = (type: NodeType) => {
-  switch (type) {
-    case 'locokau':
-      return 'border-red-200/60';
-    case 'homestay':
-      return 'border-rose-200/60';
-    case 'carshare':
-      return 'border-emerald-200/60';
-    case 'skillshare':
-      return 'border-amber-200/60';
-    default:
-      return 'border-white/40';
-  }
-};
-
-export const Sidebar: React.FC<SidebarProps> = ({ onClear }) => {
-  const handleDragStart = (e: React.DragEvent, type: NodeType) => {
-    e.dataTransfer.setData('nodeType', type);
-    e.dataTransfer.effectAllowed = 'copy';
+  const resetForm = () => {
+    setNodeName('');
+    setSelectedIcon(DEFAULT_NODE_VALUES.icon);
+    setSelectedColor(DEFAULT_NODE_VALUES.color);
+    setNodeValue(DEFAULT_NODE_VALUES.value.toString());
+    setValueLabel(DEFAULT_NODE_VALUES.valueLabel);
   };
 
+  const handleSubmit = () => {
+    if (!nodeName.trim()) return;
+
+    const input: NodeInput = {
+      name: nodeName.trim(),
+      icon: selectedIcon,
+      color: selectedColor,
+      value: parseInt(nodeValue, 10) || DEFAULT_NODE_VALUES.value,
+      valueLabel: valueLabel || DEFAULT_NODE_VALUES.valueLabel,
+      activeRate: DEFAULT_NODE_VALUES.activeRate,
+    };
+
+    onAddNode(input);
+    resetForm();
+    setIsFormOpen(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && nodeName.trim()) {
+      handleSubmit();
+    } else if (e.key === 'Escape') {
+      setIsFormOpen(false);
+      resetForm();
+    }
+  };
+
+  // Group icons by category
+  const iconsByCategory = ICON_OPTIONS.reduce((acc, opt) => {
+    if (!acc[opt.category]) {
+      acc[opt.category] = [];
+    }
+    acc[opt.category].push(opt);
+    return acc;
+  }, {} as Record<string, typeof ICON_OPTIONS>);
+
   return (
-    <aside className="w-[240px] glass-heavy border-r border-white/30 shadow-glass-sm flex flex-col relative" style={{ padding: '14px' }}>
+    <aside className="w-[260px] glass-heavy border-r border-white/30 shadow-glass-sm flex flex-col relative" style={{ padding: '14px' }}>
       <div className="flex items-center gap-2 pb-2 border-b border-white/30" style={{ marginBottom: '10px' }}>
         <h2 className="text-xs font-semibold text-slate-700">
-          Services
+          Nodes
         </h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto" style={{ paddingRight: '4px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-        {NODE_TYPES.map((config) => (
-          <div
-            key={config.type}
-            draggable
-            onDragStart={(e) => handleDragStart(e, config.type)}
-            className={`
-              flex items-center
-              ${getServiceBackground(config.type)} backdrop-blur-lg
-              border ${getServiceBorder(config.type)}
-              rounded-xl cursor-grab active:cursor-grabbing
-              transition-all duration-300 ease-glass
-              hover:shadow-glass hover:-translate-y-0.5
-              group
-            `}
-            style={{ padding: '6px 10px', gap: '8px' }}
-          >
-            {/* Service icon */}
-            <div
-              className="rounded-md bg-white/70 backdrop-blur-sm border border-white/50 flex items-center justify-center shadow-sm flex-shrink-0"
-              style={{ width: '24px', height: '24px' }}
-            >
-              <ServiceIcon type={config.type} className="w-3 h-3 text-slate-600" />
-            </div>
+      {/* Add Node Button / Form */}
+      {!isFormOpen ? (
+        <button
+          onClick={() => setIsFormOpen(true)}
+          className="w-full flex items-center justify-center gap-2 text-sm font-medium text-blue-600 bg-blue-50/60 backdrop-blur-sm border border-blue-200/50 rounded-xl hover:bg-blue-100/60 hover:border-blue-300/50 transition-all duration-300 shadow-sm"
+          style={{ padding: '12px 16px', marginBottom: '12px' }}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          新規ノードを追加
+        </button>
+      ) : (
+        <div
+          className="glass rounded-xl border border-white/40 shadow-glass"
+          style={{ padding: '14px', marginBottom: '12px' }}
+        >
+          {/* Node Name */}
+          <div style={{ marginBottom: '12px' }}>
+            <label className="text-xs text-slate-600 block" style={{ marginBottom: '6px' }}>
+              ノード名 *
+            </label>
+            <input
+              type="text"
+              value={nodeName}
+              onChange={(e) => setNodeName(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="例: 東京エリア"
+              autoFocus
+              className="w-full text-sm bg-white/60 backdrop-blur-sm border border-white/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-300"
+              style={{ padding: '8px 12px' }}
+            />
+          </div>
 
-            {/* Service name */}
-            <span className="text-xs font-medium text-slate-700 truncate flex-1">
-              {config.label}
-            </span>
-
-            {/* User count */}
-            <span className="text-[11px] text-slate-500 flex-shrink-0">
-              {formatUserCount(config.defaultUsers)}
-            </span>
-
-            {/* Drag indicator */}
-            <div className="text-slate-300 group-hover:text-slate-400 transition-colors flex-shrink-0">
-              <svg style={{ width: '10px', height: '10px' }} fill="currentColor" viewBox="0 0 20 20">
-                <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z"/>
-              </svg>
+          {/* Icon Selection */}
+          <div style={{ marginBottom: '12px' }}>
+            <label className="text-xs text-slate-600 block" style={{ marginBottom: '6px' }}>
+              アイコン
+            </label>
+            <div className="max-h-32 overflow-y-auto bg-white/40 rounded-lg border border-white/50" style={{ padding: '8px' }}>
+              {Object.entries(iconsByCategory).map(([category, icons]) => (
+                <div key={category} style={{ marginBottom: '8px' }}>
+                  <div className="text-[10px] text-slate-400 uppercase tracking-wider" style={{ marginBottom: '4px' }}>
+                    {category}
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {icons.map((opt) => (
+                      <button
+                        key={opt.icon}
+                        onClick={() => setSelectedIcon(opt.icon)}
+                        className={`w-7 h-7 flex items-center justify-center rounded-md transition-all duration-200
+                          ${selectedIcon === opt.icon
+                            ? 'bg-blue-500 text-white shadow-sm scale-110'
+                            : 'bg-white/60 hover:bg-white/80 hover:scale-105'
+                          }`}
+                        title={opt.label}
+                      >
+                        {opt.icon}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        ))}
-      </div>
+
+          {/* Color Selection */}
+          <div style={{ marginBottom: '12px' }}>
+            <label className="text-xs text-slate-600 block" style={{ marginBottom: '6px' }}>
+              カラー
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {NODE_COLORS.map((color) => (
+                <button
+                  key={color}
+                  onClick={() => setSelectedColor(color)}
+                  className={`w-6 h-6 rounded-full transition-all duration-200 border-2
+                    ${selectedColor === color
+                      ? 'border-slate-600 scale-110 shadow-sm'
+                      : 'border-white/50 hover:scale-105'
+                    }`}
+                  style={{ backgroundColor: color }}
+                  title={color}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Value Label */}
+          <div style={{ marginBottom: '12px' }}>
+            <label className="text-xs text-slate-600 block" style={{ marginBottom: '6px' }}>
+              指標ラベル
+            </label>
+            <input
+              type="text"
+              value={valueLabel}
+              onChange={(e) => setValueLabel(e.target.value)}
+              placeholder="例: ユーザー数"
+              className="w-full text-sm bg-white/60 backdrop-blur-sm border border-white/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/50"
+              style={{ padding: '8px 12px' }}
+            />
+          </div>
+
+          {/* Initial Value */}
+          <div style={{ marginBottom: '14px' }}>
+            <label className="text-xs text-slate-600 block" style={{ marginBottom: '6px' }}>
+              初期値
+            </label>
+            <input
+              type="number"
+              value={nodeValue}
+              onChange={(e) => setNodeValue(e.target.value)}
+              min="1"
+              className="w-full text-sm bg-white/60 backdrop-blur-sm border border-white/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/50"
+              style={{ padding: '8px 12px' }}
+            />
+          </div>
+
+          {/* Preview */}
+          <div
+            className="rounded-lg border border-white/50 flex items-center gap-2"
+            style={{
+              padding: '8px 12px',
+              marginBottom: '14px',
+              backgroundColor: `${selectedColor}20`,
+            }}
+          >
+            <span className="text-lg">{selectedIcon}</span>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-medium text-slate-700 truncate">
+                {nodeName || '(名前を入力)'}
+              </div>
+              <div className="text-xs text-slate-500">
+                {valueLabel}: {formatNumber(parseInt(nodeValue, 10) || 0)}
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                setIsFormOpen(false);
+                resetForm();
+              }}
+              className="flex-1 text-sm text-slate-500 bg-white/50 border border-white/50 rounded-lg hover:bg-white/70 transition-all duration-200"
+              style={{ padding: '8px' }}
+            >
+              キャンセル
+            </button>
+            <button
+              onClick={handleSubmit}
+              disabled={!nodeName.trim()}
+              className={`flex-1 text-sm font-medium rounded-lg transition-all duration-200
+                ${nodeName.trim()
+                  ? 'text-white bg-blue-500 hover:bg-blue-600 shadow-sm'
+                  : 'text-slate-400 bg-slate-100 cursor-not-allowed'
+                }`}
+              style={{ padding: '8px' }}
+            >
+              追加
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Tips card - glass style */}
-      <div className="glass-light rounded-xl" style={{ marginTop: '16px', padding: '14px' }}>
+      <div className="glass-light rounded-xl flex-1" style={{ padding: '14px' }}>
         <p className="text-xs font-medium text-slate-600" style={{ marginBottom: '8px' }}>Quick Start</p>
         <div className="text-xs text-slate-500" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <p className="flex items-center" style={{ gap: '8px' }}>
@@ -107,21 +242,28 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClear }) => {
               className="bg-white/70 backdrop-blur-sm rounded-md text-center text-slate-600 flex-shrink-0 border border-white/50"
               style={{ width: '18px', height: '18px', fontSize: '10px', lineHeight: '18px' }}
             >1</span>
-            <span>Drag a service to canvas</span>
+            <span>「新規ノード」でノード作成</span>
           </p>
           <p className="flex items-center" style={{ gap: '8px' }}>
             <span
               className="bg-white/70 backdrop-blur-sm rounded-md text-center text-slate-600 flex-shrink-0 border border-white/50"
               style={{ width: '18px', height: '18px', fontSize: '10px', lineHeight: '18px' }}
             >2</span>
-            <span>Click arrow to connect</span>
+            <span>キャンバスにドロップ</span>
           </p>
           <p className="flex items-center" style={{ gap: '8px' }}>
             <span
               className="bg-white/70 backdrop-blur-sm rounded-md text-center text-slate-600 flex-shrink-0 border border-white/50"
               style={{ width: '18px', height: '18px', fontSize: '10px', lineHeight: '18px' }}
             >3</span>
-            <span>See network value grow</span>
+            <span>矢印でノードを接続</span>
+          </p>
+          <p className="flex items-center" style={{ gap: '8px' }}>
+            <span
+              className="bg-white/70 backdrop-blur-sm rounded-md text-center text-slate-600 flex-shrink-0 border border-white/50"
+              style={{ width: '18px', height: '18px', fontSize: '10px', lineHeight: '18px' }}
+            >4</span>
+            <span>ネットワーク効果を確認</span>
           </p>
         </div>
       </div>

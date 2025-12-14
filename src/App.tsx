@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Header, Sidebar, Canvas } from './components';
 import { useFlowState } from './hooks/useFlowState';
 import { calculateNetworkValue } from './utils/metcalfe';
-import type { IntegrationLevel } from './types/flow';
+import type { IntegrationLevel, NodeInput, Position } from './types/flow';
 
 function App() {
   const {
@@ -11,7 +11,7 @@ function App() {
     connectingFrom,
     addNode,
     updateNodePosition,
-    updateNodeUserCount,
+    updateNodeValue,
     updateNodeActiveRate,
     startConnection,
     completeConnection,
@@ -25,11 +25,33 @@ function App() {
   // Integration level state (global setting)
   const [integrationLevel, setIntegrationLevel] = useState<IntegrationLevel>('simple');
 
+  // Pending node state (waiting to be placed on canvas)
+  const [pendingNode, setPendingNode] = useState<{ input: NodeInput } | null>(null);
+
   // Calculate network value using extended Metcalfe's Law
   const networkValue = useMemo(
     () => calculateNetworkValue(nodes, connections, integrationLevel),
     [nodes, connections, integrationLevel]
   );
+
+  // Handle node creation from sidebar
+  const handleAddNode = (input: NodeInput) => {
+    setPendingNode({ input });
+  };
+
+  // Handle node placement on canvas
+  const handleDropNode = (position: Position) => {
+    if (pendingNode) {
+      addNode(pendingNode.input, position);
+      setPendingNode(null);
+    }
+  };
+
+  // Handle clear all (also clear pending node)
+  const handleClearAll = () => {
+    clearAll();
+    setPendingNode(null);
+  };
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-indigo-200 via-purple-100 to-pink-200">
@@ -42,14 +64,18 @@ function App() {
       />
 
       <div className="flex-1 flex overflow-hidden">
-        <Sidebar onClear={clearAll} />
+        <Sidebar
+          onAddNode={handleAddNode}
+          onClear={handleClearAll}
+        />
         <Canvas
           nodes={nodes}
           connections={connections}
           connectingFrom={connectingFrom}
-          onAddNode={addNode}
+          pendingNode={pendingNode}
+          onDropNode={handleDropNode}
           onUpdateNodePosition={updateNodePosition}
-          onUpdateNodeUserCount={updateNodeUserCount}
+          onUpdateNodeValue={updateNodeValue}
           onUpdateNodeActiveRate={updateNodeActiveRate}
           onStartConnection={startConnection}
           onCompleteConnection={completeConnection}
@@ -73,7 +99,7 @@ function App() {
             デスクトップ推奨
           </h2>
           <p className="text-slate-600 text-sm leading-relaxed">
-            Network Value Canvasは<br />
+            Network Effect Canvasは<br />
             タブレットまたはデスクトップで<br />
             ご利用ください。
           </p>

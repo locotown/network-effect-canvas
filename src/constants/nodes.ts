@@ -1,43 +1,60 @@
-import type { NodeConfig, NodeType, IntegrationConfig, IntegrationLevel, SynergyConfig, SynergyLevel } from '../types/flow';
+import type { IconOption, IntegrationConfig, IntegrationLevel, SynergyConfig, SynergyLevel } from '../types/flow';
 
-// Node configurations - Share Economy services
-export const NODE_CONFIGS: Record<NodeType, NodeConfig> = {
-  locokau: {
-    type: 'locokau',
-    label: 'ロコカウ',
-    icon: '🌍',
-    color: '#FF6B6B',
-    defaultUsers: 10000,
-    defaultActiveRate: 0.6,
-  },
-  homestay: {
-    type: 'homestay',
-    label: '民泊サービスA',
-    icon: '🏠',
-    color: '#FF5A5F',
-    defaultUsers: 50000,
-    defaultActiveRate: 0.4,
-  },
-  carshare: {
-    type: 'carshare',
-    label: 'カーシェアB',
-    icon: '🚗',
-    color: '#00A699',
-    defaultUsers: 30000,
-    defaultActiveRate: 0.5,
-  },
-  skillshare: {
-    type: 'skillshare',
-    label: 'スキルシェアC',
-    icon: '💡',
-    color: '#FFB400',
-    defaultUsers: 20000,
-    defaultActiveRate: 0.3,
-  },
+// Available icons for node creation
+export const ICON_OPTIONS: IconOption[] = [
+  // Areas / Locations
+  { icon: '📍', label: 'ロケーション', category: 'エリア' },
+  { icon: '🏙️', label: '都市', category: 'エリア' },
+  { icon: '🗾', label: '地域', category: 'エリア' },
+  { icon: '🌍', label: 'グローバル', category: 'エリア' },
+
+  // Services
+  { icon: '🏠', label: '宿泊', category: 'サービス' },
+  { icon: '🚗', label: '移動', category: 'サービス' },
+  { icon: '💡', label: 'スキル', category: 'サービス' },
+  { icon: '🛒', label: '購買', category: 'サービス' },
+  { icon: '🍽️', label: '飲食', category: 'サービス' },
+
+  // Functions / Features
+  { icon: '💳', label: '決済', category: '機能' },
+  { icon: '👤', label: 'ユーザー', category: '機能' },
+  { icon: '🔐', label: '認証', category: '機能' },
+  { icon: '⭐', label: 'レビュー', category: '機能' },
+  { icon: '🔔', label: '通知', category: '機能' },
+
+  // Products
+  { icon: '📦', label: 'プロダクト', category: '製品' },
+  { icon: '📱', label: 'アプリ', category: '製品' },
+  { icon: '💻', label: 'システム', category: '製品' },
+
+  // Generic
+  { icon: '⚡', label: 'エネルギー', category: 'その他' },
+  { icon: '🎯', label: 'ターゲット', category: 'その他' },
+  { icon: '🔗', label: '連携', category: 'その他' },
+];
+
+// Color palette for nodes
+export const NODE_COLORS = [
+  '#FF6B6B', // Red
+  '#4ECDC4', // Teal
+  '#45B7D1', // Blue
+  '#96CEB4', // Green
+  '#FFEAA7', // Yellow
+  '#DDA0DD', // Plum
+  '#98D8C8', // Mint
+  '#F7DC6F', // Gold
+  '#BB8FCE', // Purple
+  '#85C1E9', // Sky
+];
+
+// Default values for new nodes
+export const DEFAULT_NODE_VALUES = {
+  value: 10000,
+  valueLabel: 'ユーザー数',
+  activeRate: 0.5,
+  color: '#4ECDC4',
+  icon: '📍',
 };
-
-// Get all node types as array
-export const NODE_TYPES = Object.values(NODE_CONFIGS);
 
 // Integration level configurations
 export const INTEGRATION_CONFIGS: Record<IntegrationLevel, IntegrationConfig> = {

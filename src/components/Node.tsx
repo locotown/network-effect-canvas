@@ -1,67 +1,24 @@
 import { useRef, useState } from 'react';
-import type { FlowNode, NodeType } from '../types/flow';
-import { NODE_CONFIGS, CANVAS_CONFIG } from '../constants/nodes';
-import { formatUserCount, formatPercent, getEffectiveUsers } from '../utils/metcalfe';
-import { ServiceIcon, UsersIcon, BoltIcon, ArrowRightIcon } from './icons/ServiceIcons';
+import type { FlowNode } from '../types/flow';
+import { CANVAS_CONFIG } from '../constants/nodes';
+import { formatNumber, formatPercent, getEffectiveValue } from '../utils/metcalfe';
+import { UsersIcon, BoltIcon, ArrowRightIcon } from './icons/ServiceIcons';
 
 interface NodeProps {
   node: FlowNode;
   isConnecting: boolean;
   isConnectionSource: boolean;
   onPositionChange: (id: string, position: { x: number; y: number }) => void;
-  onUserCountChange: (id: string, userCount: number) => void;
+  onValueChange: (id: string, value: number) => void;
   onActiveRateChange: (id: string, activeRate: number) => void;
   onStartConnection: (id: string) => void;
   onCompleteConnection: (id: string) => void;
   onDelete: (id: string) => void;
 }
 
-// Service-specific background colors (pastel glass)
-const getServiceBackground = (type: NodeType) => {
-  switch (type) {
-    case 'locokau':
-      return 'bg-red-50/70';
-    case 'homestay':
-      return 'bg-rose-50/70';
-    case 'carshare':
-      return 'bg-emerald-50/70';
-    case 'skillshare':
-      return 'bg-amber-50/70';
-    default:
-      return 'bg-white/55';
-  }
-};
-
-// Service-specific header colors (slightly darker)
-const getServiceHeaderBg = (type: NodeType) => {
-  switch (type) {
-    case 'locokau':
-      return 'bg-red-100/60';
-    case 'homestay':
-      return 'bg-rose-100/60';
-    case 'carshare':
-      return 'bg-emerald-100/60';
-    case 'skillshare':
-      return 'bg-amber-100/60';
-    default:
-      return 'bg-white/40';
-  }
-};
-
-// Service-specific border colors
-const getServiceBorder = (type: NodeType) => {
-  switch (type) {
-    case 'locokau':
-      return 'border-red-200/60';
-    case 'homestay':
-      return 'border-rose-200/60';
-    case 'carshare':
-      return 'border-emerald-200/60';
-    case 'skillshare':
-      return 'border-amber-200/60';
-    default:
-      return 'border-white/40';
-  }
+// Generate lighter background color from node color
+const getLighterColor = (hexColor: string, opacity: number = 0.15): string => {
+  return `${hexColor}${Math.round(opacity * 255).toString(16).padStart(2, '0')}`;
 };
 
 export const Node: React.FC<NodeProps> = ({
@@ -69,20 +26,19 @@ export const Node: React.FC<NodeProps> = ({
   isConnecting,
   isConnectionSource,
   onPositionChange,
-  onUserCountChange,
+  onValueChange,
   onActiveRateChange,
   onStartConnection,
   onCompleteConnection,
   onDelete,
 }) => {
-  const config = NODE_CONFIGS[node.type];
   const nodeRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editValue, setEditValue] = useState(node.userCount.toString());
+  const [editValue, setEditValue] = useState(node.value.toString());
   const dragOffset = useRef({ x: 0, y: 0 });
 
-  const effectiveUsers = getEffectiveUsers(node);
+  const effectiveValue = getEffectiveValue(node);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button !== 0 || isEditing) return;
@@ -142,31 +98,31 @@ export const Node: React.FC<NodeProps> = ({
     onDelete(node.id);
   };
 
-  const handleUserCountClick = (e: React.MouseEvent) => {
+  const handleValueClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsEditing(true);
-    setEditValue(node.userCount.toString());
+    setEditValue(node.value.toString());
   };
 
-  const handleUserCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleValueInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditValue(e.target.value);
   };
 
-  const handleUserCountBlur = () => {
+  const handleValueBlur = () => {
     const newValue = parseInt(editValue, 10);
     if (!isNaN(newValue) && newValue > 0) {
-      onUserCountChange(node.id, newValue);
+      onValueChange(node.id, newValue);
     } else {
-      setEditValue(node.userCount.toString());
+      setEditValue(node.value.toString());
     }
     setIsEditing(false);
   };
 
-  const handleUserCountKeyDown = (e: React.KeyboardEvent) => {
+  const handleValueKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      handleUserCountBlur();
+      handleValueBlur();
     } else if (e.key === 'Escape') {
-      setEditValue(node.userCount.toString());
+      setEditValue(node.value.toString());
       setIsEditing(false);
     }
   };
@@ -184,8 +140,8 @@ export const Node: React.FC<NodeProps> = ({
       onMouseDown={handleMouseDown}
       className={`
         absolute
-        ${getServiceBackground(node.type)} backdrop-blur-xl
-        border ${getServiceBorder(node.type)} rounded-2xl
+        backdrop-blur-xl
+        border rounded-2xl
         shadow-glass
         cursor-grab active:cursor-grabbing select-none
         transition-all duration-300 ease-glass
@@ -199,14 +155,19 @@ export const Node: React.FC<NodeProps> = ({
         left: node.position.x,
         top: node.position.y,
         width: CANVAS_CONFIG.nodeWidth,
+        backgroundColor: getLighterColor(node.color, 0.15),
+        borderColor: getLighterColor(node.color, 0.4),
         backdropFilter: 'blur(24px) saturate(180%)',
         WebkitBackdropFilter: 'blur(24px) saturate(180%)',
       }}
     >
-      {/* Header - with service-specific color */}
+      {/* Header */}
       <div
-        className={`${getServiceHeaderBg(node.type)} rounded-t-2xl border-b border-white/30`}
-        style={{ padding: '12px 16px' }}
+        className="rounded-t-2xl border-b border-white/30"
+        style={{
+          padding: '12px 16px',
+          backgroundColor: getLighterColor(node.color, 0.25),
+        }}
       >
         <div className="flex items-center justify-between" style={{ gap: '12px' }}>
           <div className="flex items-center min-w-0 flex-1" style={{ gap: '10px' }}>
@@ -214,10 +175,10 @@ export const Node: React.FC<NodeProps> = ({
               className="rounded-lg bg-white/60 backdrop-blur-sm border border-white/50 flex items-center justify-center shadow-sm flex-shrink-0"
               style={{ width: '32px', height: '32px' }}
             >
-              <ServiceIcon type={node.type} style={{ width: '16px', height: '16px' }} className="text-slate-600" />
+              <span className="text-lg">{node.icon}</span>
             </div>
             <span className="text-sm font-semibold text-slate-800 truncate">
-              {config.label}
+              {node.name}
             </span>
           </div>
           <button
@@ -233,16 +194,18 @@ export const Node: React.FC<NodeProps> = ({
 
       {/* Content area */}
       <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {/* User count row */}
+        {/* Value row */}
         <div>
-          <label className="text-xs text-slate-500 block" style={{ marginBottom: '6px' }}>Users</label>
+          <label className="text-xs text-slate-500 block" style={{ marginBottom: '6px' }}>
+            {node.valueLabel}
+          </label>
           {isEditing ? (
             <input
               type="number"
               value={editValue}
-              onChange={handleUserCountChange}
-              onBlur={handleUserCountBlur}
-              onKeyDown={handleUserCountKeyDown}
+              onChange={handleValueInputChange}
+              onBlur={handleValueBlur}
+              onKeyDown={handleValueKeyDown}
               onClick={(e) => e.stopPropagation()}
               onMouseDown={(e) => e.stopPropagation()}
               autoFocus
@@ -251,7 +214,7 @@ export const Node: React.FC<NodeProps> = ({
             />
           ) : (
             <button
-              onClick={handleUserCountClick}
+              onClick={handleValueClick}
               className="flex items-center text-sm text-slate-700 hover:text-blue-600 transition-colors group/edit"
               style={{ gap: '8px' }}
               title="Click to edit"
@@ -262,7 +225,7 @@ export const Node: React.FC<NodeProps> = ({
               >
                 <UsersIcon style={{ width: '12px', height: '12px' }} className="text-slate-400" />
               </div>
-              <span className="font-medium">{formatUserCount(node.userCount)}</span>
+              <span className="font-medium">{formatNumber(node.value)}</span>
             </button>
           )}
         </div>
@@ -300,7 +263,7 @@ export const Node: React.FC<NodeProps> = ({
           />
         </div>
 
-        {/* Effective users display */}
+        {/* Effective value display */}
         <div
           className="text-xs text-slate-500 border-t border-white/30 flex items-center justify-between"
           style={{ paddingTop: '12px' }}
@@ -310,7 +273,7 @@ export const Node: React.FC<NodeProps> = ({
             className="font-semibold text-slate-700 bg-white/60 backdrop-blur-sm rounded-md border border-white/40"
             style={{ padding: '4px 10px' }}
           >
-            {formatUserCount(effectiveUsers)}
+            {formatNumber(effectiveValue)}
           </span>
         </div>
       </div>

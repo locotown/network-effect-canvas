@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
-import type { FlowState, NodeType, Position, SynergyLevel } from '../types/flow';
-import { NODE_CONFIGS } from '../constants/nodes';
+import type { FlowState, Position, SynergyLevel, NodeInput } from '../types/flow';
+import { DEFAULT_NODE_VALUES } from '../constants/nodes';
 
-const STORAGE_KEY = 'network-value-canvas';
+const STORAGE_KEY = 'network-effect-canvas';
 
 // Generate unique ID
 const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -19,16 +19,25 @@ const loadState = (): FlowState => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) return initialState;
     const parsed = JSON.parse(saved);
-    // Migrate old data: add activeRate if missing
+
+    // Migrate old data format to new format
     const nodes = parsed.nodes.map((node: any) => ({
-      ...node,
-      activeRate: node.activeRate ?? NODE_CONFIGS[node.type as NodeType]?.defaultActiveRate ?? 0.5,
+      id: node.id,
+      name: node.name ?? node.type ?? 'ノード',
+      icon: node.icon ?? DEFAULT_NODE_VALUES.icon,
+      color: node.color ?? DEFAULT_NODE_VALUES.color,
+      position: node.position,
+      value: node.value ?? node.userCount ?? DEFAULT_NODE_VALUES.value,
+      valueLabel: node.valueLabel ?? DEFAULT_NODE_VALUES.valueLabel,
+      activeRate: node.activeRate ?? DEFAULT_NODE_VALUES.activeRate,
     }));
-    // Migrate old data: add synergy if missing
+
+    // Migrate connections (add synergy if missing)
     const connections = parsed.connections.map((conn: any) => ({
       ...conn,
       synergy: conn.synergy ?? 'standard',
     }));
+
     return { nodes, connections };
   } catch {
     return initialState;
@@ -48,9 +57,8 @@ export const useFlowState = () => {
   const [state, setState] = useState<FlowState>(loadState);
   const [connectingFrom, setConnectingFrom] = useState<string | null>(null);
 
-  // Add new node with default user count and active rate
-  const addNode = useCallback((type: NodeType, position: Position) => {
-    const config = NODE_CONFIGS[type];
+  // Add new node with custom values
+  const addNode = useCallback((input: NodeInput, position: Position) => {
     setState((prev) => {
       const newState = {
         ...prev,
@@ -58,10 +66,13 @@ export const useFlowState = () => {
           ...prev.nodes,
           {
             id: generateId(),
-            type,
+            name: input.name,
+            icon: input.icon,
+            color: input.color,
             position,
-            userCount: config.defaultUsers,
-            activeRate: config.defaultActiveRate,
+            value: input.value,
+            valueLabel: input.valueLabel,
+            activeRate: input.activeRate,
           },
         ],
       };
@@ -84,13 +95,27 @@ export const useFlowState = () => {
     });
   }, []);
 
-  // Update node user count
-  const updateNodeUserCount = useCallback((id: string, userCount: number) => {
+  // Update node name
+  const updateNodeName = useCallback((id: string, name: string) => {
     setState((prev) => {
       const newState = {
         ...prev,
         nodes: prev.nodes.map((node) =>
-          node.id === id ? { ...node, userCount } : node
+          node.id === id ? { ...node, name } : node
+        ),
+      };
+      saveState(newState);
+      return newState;
+    });
+  }, []);
+
+  // Update node value
+  const updateNodeValue = useCallback((id: string, value: number) => {
+    setState((prev) => {
+      const newState = {
+        ...prev,
+        nodes: prev.nodes.map((node) =>
+          node.id === id ? { ...node, value } : node
         ),
       };
       saveState(newState);
@@ -218,7 +243,8 @@ export const useFlowState = () => {
     connectingFrom,
     addNode,
     updateNodePosition,
-    updateNodeUserCount,
+    updateNodeName,
+    updateNodeValue,
     updateNodeActiveRate,
     startConnection,
     completeConnection,

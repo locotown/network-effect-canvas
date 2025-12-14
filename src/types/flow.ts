@@ -1,6 +1,3 @@
-// Node types - Share Economy services
-export type NodeType = 'locokau' | 'homestay' | 'carshare' | 'skillshare';
-
 // Integration level types
 export type IntegrationLevel = 'simple' | 'moderate' | 'full';
 
@@ -13,13 +10,16 @@ export interface Position {
   y: number;
 }
 
-// Node on canvas
+// Generic node on canvas
 export interface FlowNode {
   id: string;
-  type: NodeType;
+  name: string;           // User-defined name (e.g., "東京エリア", "決済機能")
+  icon: string;           // Emoji or icon identifier
+  color: string;          // Node color (hex)
   position: Position;
-  userCount: number;
-  activeRate: number; // 0-1 (e.g., 0.6 = 60%)
+  value: number;          // Primary value metric
+  valueLabel: string;     // Label for value (e.g., "ユーザー数", "売上", "面積")
+  activeRate: number;     // 0-1 (e.g., 0.6 = 60%)
 }
 
 // Connection between nodes
@@ -36,14 +36,11 @@ export interface FlowState {
   connections: Connection[];
 }
 
-// Node configuration - extensible for new node types
-export interface NodeConfig {
-  type: NodeType;
-  label: string;
+// Available icon options
+export interface IconOption {
   icon: string;
-  color: string;
-  defaultUsers: number;
-  defaultActiveRate: number;
+  label: string;
+  category: string;
 }
 
 // Integration level configuration
@@ -66,4 +63,14 @@ export interface NetworkValue {
   standaloneValue: number;
   connectedValue: number;
   multiplier: number;
+}
+
+// Node creation input
+export interface NodeInput {
+  name: string;
+  icon: string;
+  color: string;
+  value: number;
+  valueLabel: string;
+  activeRate: number;
 }
