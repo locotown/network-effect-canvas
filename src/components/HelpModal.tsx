@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+export type HelpTabId = 'effect' | 'metcalfe' | 'relation' | 'guide';
 
 interface HelpModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialTab?: HelpTabId;
 }
 
-type TabId = 'effect' | 'metcalfe' | 'relation' | 'guide';
-
-const tabs: { id: TabId; label: string; icon: string }[] = [
+const tabs: { id: HelpTabId; label: string; icon: string }[] = [
   { id: 'effect', label: 'ネットワーク効果', icon: '📈' },
   { id: 'metcalfe', label: 'メトカーフの法則', icon: '📐' },
   { id: 'relation', label: '両者の関係', icon: '🔗' },
@@ -100,8 +101,15 @@ const CycleDiagram: React.FC<{ items: string[] }> = ({ items }) => {
   );
 };
 
-export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
-  const [activeTab, setActiveTab] = useState<TabId>('effect');
+export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, initialTab = 'effect' }) => {
+  const [activeTab, setActiveTab] = useState<HelpTabId>(initialTab);
+
+  // Sync activeTab with initialTab when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab(initialTab);
+    }
+  }, [isOpen, initialTab]);
 
   if (!isOpen) return null;
 

@@ -2,15 +2,24 @@ import { useState } from 'react';
 import { ICON_OPTIONS, NODE_COLORS, DEFAULT_NODE_VALUES } from '../constants/nodes';
 import { PRESETS } from '../constants/presets';
 import type { NodeInput } from '../types/flow';
+import type { HelpTabId } from './HelpModal';
 import { formatNumber } from '../utils/metcalfe';
 
 interface SidebarProps {
   onAddNode: (input: NodeInput) => void;
   onClear: () => void;
   onLoadPreset: (presetId: string) => void;
+  onOpenHelp: (tab?: HelpTabId) => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ onAddNode, onClear, onLoadPreset }) => {
+const helpLinks: { id: HelpTabId; label: string; icon: string }[] = [
+  { id: 'effect', label: 'ネットワーク効果とは', icon: '📈' },
+  { id: 'metcalfe', label: 'メトカーフの法則', icon: '📐' },
+  { id: 'relation', label: '両者の関係', icon: '🔗' },
+  { id: 'guide', label: '使い方', icon: '📖' },
+];
+
+export const Sidebar: React.FC<SidebarProps> = ({ onAddNode, onClear, onLoadPreset, onOpenHelp }) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [nodeName, setNodeName] = useState('');
   const [selectedIcon, setSelectedIcon] = useState(DEFAULT_NODE_VALUES.icon);
@@ -258,38 +267,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddNode, onClear, onLoadPres
         </div>
       </div>
 
-      {/* Tips card - glass style */}
-      <div className="glass-light rounded-xl flex-1" style={{ padding: '14px' }}>
-        <p className="text-xs font-medium text-slate-600" style={{ marginBottom: '8px' }}>使い方</p>
-        <div className="text-xs text-slate-500" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <p className="flex items-center" style={{ gap: '8px' }}>
-            <span
-              className="bg-white/70 backdrop-blur-sm rounded-md text-center text-slate-600 flex-shrink-0 border border-white/50"
-              style={{ width: '18px', height: '18px', fontSize: '10px', lineHeight: '18px' }}
-            >1</span>
-            <span>「新規ノード」でノード作成</span>
-          </p>
-          <p className="flex items-center" style={{ gap: '8px' }}>
-            <span
-              className="bg-white/70 backdrop-blur-sm rounded-md text-center text-slate-600 flex-shrink-0 border border-white/50"
-              style={{ width: '18px', height: '18px', fontSize: '10px', lineHeight: '18px' }}
-            >2</span>
-            <span>キャンバスにドロップ</span>
-          </p>
-          <p className="flex items-center" style={{ gap: '8px' }}>
-            <span
-              className="bg-white/70 backdrop-blur-sm rounded-md text-center text-slate-600 flex-shrink-0 border border-white/50"
-              style={{ width: '18px', height: '18px', fontSize: '10px', lineHeight: '18px' }}
-            >3</span>
-            <span>矢印でノードを接続</span>
-          </p>
-          <p className="flex items-center" style={{ gap: '8px' }}>
-            <span
-              className="bg-white/70 backdrop-blur-sm rounded-md text-center text-slate-600 flex-shrink-0 border border-white/50"
-              style={{ width: '18px', height: '18px', fontSize: '10px', lineHeight: '18px' }}
-            >4</span>
-            <span>ネットワーク効果を確認</span>
-          </p>
+      {/* Help links - glass style */}
+      <div className="glass-light rounded-xl" style={{ padding: '14px', marginBottom: '12px' }}>
+        <p className="text-xs font-medium text-slate-600" style={{ marginBottom: '10px' }}>
+          📚 ヘルプ
+        </p>
+        <div className="flex flex-col" style={{ gap: '6px' }}>
+          {helpLinks.map((link) => (
+            <button
+              key={link.id}
+              onClick={() => onOpenHelp(link.id)}
+              className="w-full flex items-center text-left text-xs bg-white/50 backdrop-blur-sm border border-white/40 rounded-lg hover:bg-white/70 hover:border-blue-200/50 transition-all duration-200 shadow-sm"
+              style={{ padding: '8px 10px', gap: '8px' }}
+            >
+              <span className="text-base flex-shrink-0">{link.icon}</span>
+              <span className="text-slate-700">{link.label}</span>
+            </button>
+          ))}
         </div>
       </div>
 

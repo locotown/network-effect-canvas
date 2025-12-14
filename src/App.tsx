@@ -1,9 +1,12 @@
-import { useMemo, useState } from 'react';
-import { Header, Sidebar, Canvas, HelpModal } from './components';
+import { useMemo, useState, useEffect } from 'react';
+import { Header, Sidebar, Canvas, HelpModal, WelcomeModal } from './components';
+import type { HelpTabId } from './components/HelpModal';
 import { useFlowState } from './hooks/useFlowState';
 import { calculateNetworkValue } from './utils/metcalfe';
 import { PRESETS } from './constants/presets';
 import type { IntegrationLevel, NodeInput, Position } from './types/flow';
+
+const WELCOME_DISMISSED_KEY = 'network-effect-canvas-welcome-dismissed';
 
 function App() {
   const {
@@ -39,6 +42,33 @@ function App() {
 
   // Help modal state
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [helpInitialTab, setHelpInitialTab] = useState<HelpTabId>('effect');
+
+  // Welcome modal state (show on first visit)
+  const [isWelcomeOpen, setIsWelcomeOpen] = useState(false);
+
+  useEffect(() => {
+    const dismissed = localStorage.getItem(WELCOME_DISMISSED_KEY);
+    if (!dismissed) {
+      setIsWelcomeOpen(true);
+    }
+  }, []);
+
+  // Handle opening help with specific tab
+  const handleOpenHelp = (tab: HelpTabId = 'effect') => {
+    setHelpInitialTab(tab);
+    setIsHelpOpen(true);
+  };
+
+  // Handle welcome modal actions
+  const handleWelcomeClose = () => {
+    setIsWelcomeOpen(false);
+  };
+
+  const handleWelcomeOpenHelp = () => {
+    setIsWelcomeOpen(false);
+    handleOpenHelp('guide');
+  };
 
   // Calculate network value using extended Metcalfe's Law
   const networkValue = useMemo(
@@ -73,7 +103,7 @@ function App() {
         networkValue={networkValue}
         integrationLevel={integrationLevel}
         onIntegrationLevelChange={setIntegrationLevel}
-        onHelpClick={() => setIsHelpOpen(true)}
+        onHelpClick={() => handleOpenHelp()}
       />
 
       <div className="flex-1 flex overflow-hidden">
@@ -81,6 +111,7 @@ function App() {
           onAddNode={handleAddNode}
           onClear={handleClearAll}
           onLoadPreset={loadPreset}
+          onOpenHelp={handleOpenHelp}
         />
         <Canvas
           nodes={nodes}
@@ -102,8 +133,19 @@ function App() {
         />
       </div>
 
+      {/* Welcome Modal */}
+      <WelcomeModal
+        isOpen={isWelcomeOpen}
+        onClose={handleWelcomeClose}
+        onOpenHelp={handleWelcomeOpenHelp}
+      />
+
       {/* Help Modal */}
-      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+      <HelpModal
+        isOpen={isHelpOpen}
+        onClose={() => setIsHelpOpen(false)}
+        initialTab={helpInitialTab}
+      />
 
       {/* Mobile warning - Liquid Glass style */}
       <div className="md:hidden fixed inset-0 bg-gradient-to-br from-indigo-300 via-purple-300 to-pink-300 z-50 flex items-center justify-center p-8">
