@@ -1,9 +1,8 @@
-import { useMemo, useState, useEffect, useRef } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Header, Sidebar, Canvas, HelpModal, WelcomeModal } from './components';
 import type { HelpTabId } from './components/HelpModal';
 import { useFlowState } from './hooks/useFlowState';
 import { calculateNetworkValue } from './utils/metcalfe';
-import { parseUrlState, clearUrlState } from './utils/share';
 import { PRESETS } from './constants/presets';
 import type { IntegrationLevel, NodeInput, Position } from './types/flow';
 
@@ -28,12 +27,7 @@ function App() {
     clearAll,
     loadPreset,
     clearCurrentPreset,
-    importState,
-    getState,
   } = useFlowState();
-
-  // Canvas ref for screenshot functionality
-  const canvasRef = useRef<HTMLDivElement>(null);
 
   // Get current preset object from ID
   const currentPreset = currentPresetId
@@ -52,15 +46,6 @@ function App() {
 
   // Welcome modal state (show on first visit)
   const [isWelcomeOpen, setIsWelcomeOpen] = useState(false);
-
-  // Check for shared state in URL on initial load
-  useEffect(() => {
-    const sharedState = parseUrlState();
-    if (sharedState) {
-      importState(sharedState);
-      clearUrlState();
-    }
-  }, [importState]);
 
   useEffect(() => {
     const dismissed = localStorage.getItem(WELCOME_DISMISSED_KEY);
@@ -119,9 +104,6 @@ function App() {
         integrationLevel={integrationLevel}
         onIntegrationLevelChange={setIntegrationLevel}
         onHelpClick={() => handleOpenHelp()}
-        canvasRef={canvasRef}
-        flowState={getState()}
-        onImportState={importState}
       />
 
       <div className="flex-1 flex overflow-hidden">
@@ -148,7 +130,6 @@ function App() {
           onDeleteConnection={deleteConnection}
           onUpdateConnectionSynergy={updateConnectionSynergy}
           onClearPreset={clearCurrentPreset}
-          externalContentRef={canvasRef}
         />
       </div>
 

@@ -28,7 +28,6 @@ interface CanvasProps {
   onDeleteConnection: (id: string) => void;
   onUpdateConnectionSynergy: (id: string, synergy: SynergyLevel) => void;
   onClearPreset: () => void;
-  externalContentRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 export const Canvas: React.FC<CanvasProps> = ({
@@ -48,11 +47,9 @@ export const Canvas: React.FC<CanvasProps> = ({
   onDeleteConnection,
   onUpdateConnectionSynergy,
   onClearPreset,
-  externalContentRef,
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const internalContentRef = useRef<HTMLDivElement>(null);
-  const contentRef = externalContentRef || internalContentRef;
+  const contentRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
 
   const handleZoomIn = useCallback(() => {
