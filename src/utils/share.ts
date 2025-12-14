@@ -54,11 +54,30 @@ export const exportCanvasAsImage = async (
 
     // Capture the full canvas
     const fullCanvas = await html2canvas(element, {
-      backgroundColor: '#f0f4ff',
+      backgroundColor: '#e8ecf4',
       scale: scale,
       useCORS: true,
       logging: false,
       allowTaint: true,
+      onclone: (clonedDoc) => {
+        // Fix unsupported color functions by replacing with fallback colors
+        const allElements = clonedDoc.querySelectorAll('*');
+        allElements.forEach((el) => {
+          const computedStyle = window.getComputedStyle(el as Element);
+          const htmlEl = el as HTMLElement;
+
+          // Replace problematic backdrop-filter
+          if (computedStyle.backdropFilter && computedStyle.backdropFilter !== 'none') {
+            htmlEl.style.backdropFilter = 'none';
+            (htmlEl.style as unknown as Record<string, string>).webkitBackdropFilter = 'none';
+          }
+
+          // Ensure solid backgrounds for glassmorphism elements
+          if (htmlEl.classList.contains('glass') || htmlEl.classList.contains('glass-heavy')) {
+            htmlEl.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+          }
+        });
+      },
     });
 
     // Create a cropped canvas
