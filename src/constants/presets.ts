@@ -159,6 +159,7 @@ const mercariPreset: Preset = {
       { id: 'c3', sourceId: 'mercari-listings', targetId: 'mercari-logistics', synergy: 'good' as SynergyLevel },
       { id: 'c4', sourceId: 'mercari-listings', targetId: 'mercari-payment', synergy: 'good' as SynergyLevel },
       { id: 'c5', sourceId: 'mercari-sellers', targetId: 'mercari-buyers', synergy: 'excellent' as SynergyLevel },
+      { id: 'c5b', sourceId: 'mercari-buyers', targetId: 'mercari-sellers', synergy: 'excellent' as SynergyLevel },
     ],
   },
 };
@@ -224,6 +225,7 @@ const uberPreset: Preset = {
     ],
     connections: [
       { id: 'c1', sourceId: 'uber-drivers', targetId: 'uber-riders', synergy: 'excellent' as SynergyLevel },
+      { id: 'c1b', sourceId: 'uber-riders', targetId: 'uber-drivers', synergy: 'excellent' as SynergyLevel },
       { id: 'c2', sourceId: 'uber-drivers', targetId: 'uber-eats', synergy: 'excellent' as SynergyLevel },
       { id: 'c3', sourceId: 'uber-riders', targetId: 'uber-eats', synergy: 'good' as SynergyLevel },
       { id: 'c4', sourceId: 'uber-eats', targetId: 'uber-merchants', synergy: 'excellent' as SynergyLevel },
