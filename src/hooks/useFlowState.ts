@@ -255,6 +255,19 @@ export const useFlowState = () => {
     setCurrentPresetId(null);
   }, []);
 
+  // Get current state (for sharing)
+  const getState = useCallback((): FlowState => {
+    return state;
+  }, [state]);
+
+  // Import state from external source (JSON file, URL)
+  const importState = useCallback((newState: FlowState) => {
+    setState(newState);
+    saveState(newState);
+    setConnectingFrom(null);
+    setCurrentPresetId(null);
+  }, []);
+
   return {
     nodes: state.nodes,
     connections: state.connections,
@@ -275,5 +288,7 @@ export const useFlowState = () => {
     reload,
     loadPreset,
     clearCurrentPreset,
+    getState,
+    importState,
   };
 };

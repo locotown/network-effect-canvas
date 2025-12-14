@@ -27,6 +27,8 @@ function App() {
     clearAll,
     loadPreset,
     clearCurrentPreset,
+    getState,
+    importState,
   } = useFlowState();
 
   // Get current preset object from ID
@@ -104,6 +106,8 @@ function App() {
         integrationLevel={integrationLevel}
         onIntegrationLevelChange={setIntegrationLevel}
         onHelpClick={() => handleOpenHelp()}
+        flowState={getState()}
+        onImportState={importState}
       />
 
       <div className="flex-1 flex overflow-hidden">
