@@ -93,7 +93,8 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center justify-center" style={{ gap: '12px' }}>
             {/* Standalone Value - glass card */}
             <div className="glass rounded-xl shadow-sm" style={{ padding: '10px 20px' }}>
-              <div className="text-xs font-medium text-slate-500" style={{ marginBottom: '2px' }}>単体価値</div>
+              <div className="text-xs font-medium text-slate-500">単体価値</div>
+              <div className="text-[10px] text-slate-400" style={{ marginBottom: '2px' }}>規模の指標</div>
               <div className="text-lg font-semibold text-slate-800">
                 {formatValue(networkValue.standaloneValue)}
               </div>
@@ -124,11 +125,11 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Multiplier - glass card with green tint */}
             {showMultiplier && (
-              <div className="flex items-center rounded-xl shadow-sm bg-emerald-500/80 backdrop-blur-xl border border-emerald-400/50" style={{ padding: '8px 16px', gap: '8px' }}>
+              <div className="flex flex-col items-center rounded-xl shadow-sm bg-emerald-500/80 backdrop-blur-xl border border-emerald-400/50" style={{ padding: '8px 16px' }}>
                 <div className="text-lg font-bold text-white">
                   {networkValue.multiplier.toFixed(1)}x
                 </div>
-                <span className="text-xs font-medium text-emerald-100 bg-white/20 rounded-full" style={{ padding: '2px 6px' }}>上昇</span>
+                <span className="text-[10px] font-medium text-emerald-100">ネットワーク効果</span>
               </div>
             )}
 

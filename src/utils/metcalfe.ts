@@ -156,30 +156,33 @@ export const calculateNetworkValue = (
 };
 
 /**
- * Format large numbers for display (e.g., 1,234,567 or 1.2B)
+ * Format large numbers for display using Japanese units (万, 億, 兆)
  */
 export const formatValue = (value: number): string => {
-  if (value >= 1_000_000_000) {
-    return `${(value / 1_000_000_000).toFixed(1)}B`;
+  if (value >= 1_000_000_000_000) {
+    return `${(value / 1_000_000_000_000).toFixed(1)}兆`;
   }
-  if (value >= 1_000_000) {
-    return `${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 100_000_000) {
+    return `${(value / 100_000_000).toFixed(1)}億`;
   }
-  if (value >= 1_000) {
-    return `${(value / 1_000).toFixed(1)}K`;
+  if (value >= 10_000) {
+    return `${(value / 10_000).toFixed(1)}万`;
   }
   return Math.round(value).toLocaleString();
 };
 
 /**
- * Format number for display
+ * Format number for display using Japanese units (万, 億, 兆)
  */
 export const formatNumber = (count: number): string => {
-  if (count >= 1_000_000) {
-    return `${(count / 1_000_000).toFixed(1)}M`;
+  if (count >= 1_000_000_000_000) {
+    return `${(count / 1_000_000_000_000).toFixed(1)}兆`;
   }
-  if (count >= 1_000) {
-    return `${(count / 1_000).toFixed(0)}K`;
+  if (count >= 100_000_000) {
+    return `${(count / 100_000_000).toFixed(1)}億`;
+  }
+  if (count >= 10_000) {
+    return `${(count / 10_000).toFixed(0)}万`;
   }
   return count.toLocaleString();
 };
