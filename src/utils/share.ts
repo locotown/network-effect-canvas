@@ -60,21 +60,81 @@ export const exportCanvasAsImage = async (
       logging: false,
       allowTaint: true,
       onclone: (clonedDoc) => {
+        // Helper to check if a color string contains unsupported functions
+        const hasUnsupportedColor = (value: string): boolean => {
+          if (!value) return false;
+          const unsupported = ['oklab', 'oklch', 'lab', 'lch', 'color(', 'color-mix'];
+          return unsupported.some(fn => value.toLowerCase().includes(fn));
+        };
+
+        // Helper to convert computed color to safe RGB
+        const getSafeColor = (el: Element, prop: string): string | null => {
+          const computed = window.getComputedStyle(el);
+          const value = computed.getPropertyValue(prop);
+          if (hasUnsupportedColor(value)) {
+            // Return fallback colors based on property
+            if (prop.includes('background')) return 'rgba(255, 255, 255, 0.9)';
+            if (prop.includes('border')) return 'rgba(200, 200, 200, 0.5)';
+            if (prop.includes('color')) return '#334155'; // slate-700
+            return null;
+          }
+          return null;
+        };
+
         // Fix unsupported color functions by replacing with fallback colors
         const allElements = clonedDoc.querySelectorAll('*');
         allElements.forEach((el) => {
-          const computedStyle = window.getComputedStyle(el as Element);
           const htmlEl = el as HTMLElement;
+          const computed = window.getComputedStyle(el as Element);
 
-          // Replace problematic backdrop-filter
-          if (computedStyle.backdropFilter && computedStyle.backdropFilter !== 'none') {
+          // Remove backdrop-filter completely
+          if (computed.backdropFilter && computed.backdropFilter !== 'none') {
             htmlEl.style.backdropFilter = 'none';
             (htmlEl.style as unknown as Record<string, string>).webkitBackdropFilter = 'none';
           }
 
+          // Check and fix color properties
+          const colorProps = [
+            'color',
+            'background-color',
+            'border-color',
+            'border-top-color',
+            'border-right-color',
+            'border-bottom-color',
+            'border-left-color',
+            'outline-color',
+            'box-shadow',
+            'text-shadow',
+          ];
+
+          for (const prop of colorProps) {
+            const safeColor = getSafeColor(el, prop);
+            if (safeColor) {
+              htmlEl.style.setProperty(prop, safeColor);
+            }
+          }
+
+          // Handle background (might contain gradients with oklab)
+          const bg = computed.background;
+          if (hasUnsupportedColor(bg)) {
+            htmlEl.style.background = 'rgba(255, 255, 255, 0.9)';
+          }
+
           // Ensure solid backgrounds for glassmorphism elements
           if (htmlEl.classList.contains('glass') || htmlEl.classList.contains('glass-heavy')) {
-            htmlEl.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+            htmlEl.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+            htmlEl.style.backdropFilter = 'none';
+          }
+
+          // Handle nodes with specific background colors
+          if (htmlEl.classList.contains('bg-blue-500') || htmlEl.classList.contains('bg-blue-500/80')) {
+            htmlEl.style.backgroundColor = 'rgba(59, 130, 246, 0.9)';
+          }
+          if (htmlEl.classList.contains('bg-emerald-500') || htmlEl.classList.contains('bg-emerald-500/80')) {
+            htmlEl.style.backgroundColor = 'rgba(16, 185, 129, 0.9)';
+          }
+          if (htmlEl.classList.contains('bg-red-500') || htmlEl.classList.contains('bg-red-500/90')) {
+            htmlEl.style.backgroundColor = 'rgba(239, 68, 68, 0.9)';
           }
         });
       },
