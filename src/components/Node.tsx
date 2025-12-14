@@ -14,6 +14,7 @@ interface NodeProps {
   onStartConnection: (id: string) => void;
   onCompleteConnection: (id: string) => void;
   onDelete: (id: string) => void;
+  zoom?: number;
 }
 
 // Generate lighter background color from node color
@@ -31,6 +32,7 @@ export const Node: React.FC<NodeProps> = ({
   onStartConnection,
   onCompleteConnection,
   onDelete,
+  zoom = 1,
 }) => {
   const nodeRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -48,9 +50,10 @@ export const Node: React.FC<NodeProps> = ({
     const rect = nodeRef.current?.getBoundingClientRect();
     if (!rect) return;
 
+    // Store offset in canvas coordinates (divide by zoom)
     dragOffset.current = {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
+      x: (e.clientX - rect.left) / zoom,
+      y: (e.clientY - rect.top) / zoom,
     };
     setIsDragging(true);
 
@@ -59,14 +62,9 @@ export const Node: React.FC<NodeProps> = ({
       if (!canvas) return;
 
       const canvasRect = canvas.getBoundingClientRect();
-      const x = Math.max(0, Math.min(
-        e.clientX - canvasRect.left - dragOffset.current.x,
-        canvasRect.width - CANVAS_CONFIG.nodeWidth
-      ));
-      const y = Math.max(0, Math.min(
-        e.clientY - canvasRect.top - dragOffset.current.y,
-        canvasRect.height - CANVAS_CONFIG.nodeHeight
-      ));
+      // Convert screen coordinates to canvas coordinates and subtract offset
+      const x = Math.max(0, (e.clientX - canvasRect.left) / zoom - dragOffset.current.x);
+      const y = Math.max(0, (e.clientY - canvasRect.top) / zoom - dragOffset.current.y);
 
       onPositionChange(node.id, { x, y });
     };
