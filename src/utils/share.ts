@@ -1,12 +1,35 @@
 import type { FlowState } from '../types/flow';
 
 /**
- * Encode FlowState to Base64 string for URL sharing
+ * Convert standard Base64 to URL-safe Base64
+ */
+const toUrlSafeBase64 = (base64: string): string => {
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+};
+
+/**
+ * Convert URL-safe Base64 back to standard Base64
+ */
+const fromUrlSafeBase64 = (urlSafe: string): string => {
+  let base64 = urlSafe.replace(/-/g, '+').replace(/_/g, '/');
+  // Add padding if needed
+  const padding = base64.length % 4;
+  if (padding) {
+    base64 += '='.repeat(4 - padding);
+  }
+  return base64;
+};
+
+/**
+ * Encode FlowState to URL-safe Base64 string for URL sharing
  */
 export const encodeFlowState = (state: FlowState): string => {
   try {
     const json = JSON.stringify(state);
-    return btoa(unescape(encodeURIComponent(json)));
+    // Encode to UTF-8 compatible Base64
+    const base64 = btoa(unescape(encodeURIComponent(json)));
+    // Convert to URL-safe Base64
+    return toUrlSafeBase64(base64);
   } catch (error) {
     console.error('Failed to encode flow state:', error);
     return '';
@@ -14,11 +37,14 @@ export const encodeFlowState = (state: FlowState): string => {
 };
 
 /**
- * Decode Base64 string to FlowState
+ * Decode URL-safe Base64 string to FlowState
  */
 export const decodeFlowState = (encoded: string): FlowState | null => {
   try {
-    const json = decodeURIComponent(escape(atob(encoded)));
+    // Convert from URL-safe Base64 to standard Base64
+    const base64 = fromUrlSafeBase64(encoded);
+    // Decode from UTF-8 compatible Base64
+    const json = decodeURIComponent(escape(atob(base64)));
     const state = JSON.parse(json) as FlowState;
 
     // Basic validation

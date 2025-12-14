@@ -4,10 +4,23 @@ export const config = {
   runtime: 'edge',
 };
 
+// Convert URL-safe Base64 back to standard Base64
+function fromUrlSafeBase64(urlSafe) {
+  let base64 = urlSafe.replace(/-/g, '+').replace(/_/g, '/');
+  // Add padding if needed
+  const padding = base64.length % 4;
+  if (padding) {
+    base64 += '='.repeat(4 - padding);
+  }
+  return base64;
+}
+
 // Decode Base64 state
 function decodeFlowState(encoded) {
   try {
-    const json = decodeURIComponent(escape(atob(encoded)));
+    // Convert from URL-safe Base64 to standard Base64
+    const base64 = fromUrlSafeBase64(encoded);
+    const json = decodeURIComponent(escape(atob(base64)));
     const state = JSON.parse(json);
 
     if (!Array.isArray(state.nodes) || !Array.isArray(state.connections)) {
