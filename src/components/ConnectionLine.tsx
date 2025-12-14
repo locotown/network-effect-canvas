@@ -222,7 +222,7 @@ export const ConnectionLine: React.FC<ConnectionLineProps> = ({
 
       {/* Synergy selection menu - glass style */}
       {showSynergyMenu && (
-        <foreignObject x={midX - 60} y={midY + 14} width="120" height="110">
+        <foreignObject x={midX - 60} y={midY + 14} width="120" height="130">
           <div
             className="bg-white/80 backdrop-blur-xl border border-white/50 rounded-xl shadow-glass-lg overflow-hidden"
             style={{

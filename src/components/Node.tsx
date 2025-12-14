@@ -240,7 +240,7 @@ export const Node: React.FC<NodeProps> = ({
               >
                 <BoltIcon style={{ width: '12px', height: '12px' }} className="text-slate-400" />
               </div>
-              Active Rate
+              アクティブ率
             </label>
             <span
               className="text-xs font-semibold text-slate-700 bg-white/60 backdrop-blur-sm rounded-md border border-white/40"
@@ -268,7 +268,7 @@ export const Node: React.FC<NodeProps> = ({
           className="text-xs text-slate-500 border-t border-white/30 flex items-center justify-between"
           style={{ paddingTop: '12px' }}
         >
-          <span>Effective</span>
+          <span>有効値</span>
           <span
             className="font-semibold text-slate-700 bg-white/60 backdrop-blur-sm rounded-md border border-white/40"
             style={{ padding: '4px 10px' }}
