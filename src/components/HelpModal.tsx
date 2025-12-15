@@ -247,15 +247,25 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, initialTa
                   <div className="text-4xl">📐</div>
                   <div>
                     <h3 className="text-lg font-bold text-slate-800 mb-2">メトカーフの法則</h3>
-                    <div className="text-3xl font-mono font-bold text-purple-600 mb-2">V = n²</div>
+                    <div className="text-2xl font-mono font-bold text-purple-600 mb-2">V ∝ n(n-1)/2 ≈ n²</div>
                     <p className="text-slate-600 text-sm">
                       V: ネットワークの価値　/　n: ノード（参加者）数
                     </p>
                     <p className="text-slate-700 mt-2">
-                      <strong>「ネットワークの価値は参加者数の2乗に比例する」</strong>
+                      <strong>「ネットワークの価値は可能な接続数に比例する」</strong>
                     </p>
                   </div>
                 </div>
+              </div>
+
+              {/* 正確な定義 */}
+              <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+                <h4 className="text-sm font-bold text-amber-800 mb-2">📝 正確な定義</h4>
+                <p className="text-sm text-amber-700 leading-relaxed">
+                  メトカーフの法則は<strong>「可能な接続ペアの数」</strong>に関する法則です。<br />
+                  n人のネットワークでは、<strong className="font-mono">n(n-1)/2</strong>通りの接続が可能。<br />
+                  これはn²に近似されるため「2乗の法則」と呼ばれます。
+                </p>
               </div>
 
               {/* ノード数と接続数の関係 */}
@@ -273,25 +283,44 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, initialTa
 
                 {/* 棒グラフ */}
                 <div className="bg-slate-50 rounded-lg p-4">
-                  <h5 className="text-xs font-medium text-slate-600 mb-3 text-center">📊 ネットワーク価値の成長</h5>
+                  <h5 className="text-xs font-medium text-slate-600 mb-3 text-center">📊 接続数の成長（n(n-1)/2）</h5>
                   <BarChart
                     data={[
-                      { label: '2', value: 4, connections: 1 },
-                      { label: '3', value: 9, connections: 3 },
-                      { label: '4', value: 16, connections: 6 },
-                      { label: '5', value: 25, connections: 10 },
+                      { label: '2', value: 1, connections: 1 },
+                      { label: '3', value: 3, connections: 3 },
+                      { label: '4', value: 6, connections: 6 },
+                      { label: '5', value: 10, connections: 10 },
                     ]}
                   />
                 </div>
               </div>
 
-              {/* なぜ2乗なのか */}
-              <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
-                <h4 className="text-sm font-bold text-blue-800 mb-2">💡 なぜ2乗に比例するのか？</h4>
-                <p className="text-sm text-blue-700">
-                  各ノードは他のすべてのノードと接続可能です。<br />
-                  接続数 = n(n-1)/2 ≈ n² / 2<br />
-                  つまり、参加者が増えると接続パターンが<strong>指数関数的に</strong>増加します。
+              {/* ネットワーク効果の種類 */}
+              <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                <h4 className="text-sm font-bold text-slate-700 mb-4">📊 ネットワーク効果の種類</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-blue-50 rounded-lg p-4">
+                    <h5 className="font-bold text-blue-800 mb-2">直接ネットワーク効果</h5>
+                    <p className="text-xs text-blue-700 mb-2">同じタイプのユーザー同士がつながる</p>
+                    <p className="text-xs text-blue-600">例: 電話、LINE、SNS</p>
+                    <p className="text-xs text-blue-500 mt-2 font-mono">V ∝ n²</p>
+                  </div>
+                  <div className="bg-purple-50 rounded-lg p-4">
+                    <h5 className="font-bold text-purple-800 mb-2">間接ネットワーク効果</h5>
+                    <p className="text-xs text-purple-700 mb-2">異なるタイプのユーザーが相互に価値を高める</p>
+                    <p className="text-xs text-purple-600">例: メルカリ、Uber（両面市場）</p>
+                    <p className="text-xs text-purple-500 mt-2 font-mono">V ∝ n₁ × n₂</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* このツールでの扱い */}
+              <div className="bg-slate-100 rounded-xl p-4 border border-slate-200">
+                <h4 className="text-sm font-bold text-slate-700 mb-2">🔧 このツールでの計算</h4>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  このツールでは、<strong>概念的な理解を助けるため</strong>に簡略化したモデルを使用しています。
+                  直接効果と間接効果を区別せず、すべての接続を同等に扱っています。
+                  表示される数値は相対的なスコアであり、実際の経済価値ではありません。
                 </p>
               </div>
             </div>
