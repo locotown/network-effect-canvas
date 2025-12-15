@@ -17,6 +17,7 @@ const helpLinks: { id: HelpTabId; label: string; icon: string }[] = [
   { id: 'metcalfe', label: 'メトカーフの法則', icon: '📐' },
   { id: 'relation', label: '両者の関係', icon: '🔗' },
   { id: 'guide', label: '使い方', icon: '📖' },
+  { id: 'about', label: 'このツールについて', icon: 'ℹ️' },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ onAddNode, onClear, onLoadPreset, onOpenHelp }) => {

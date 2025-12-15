@@ -54,12 +54,27 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
 
         {/* Content */}
         <div className="px-6 py-6">
-          <div className="bg-slate-50 rounded-xl p-4 mb-6">
+          <div className="bg-slate-50 rounded-xl p-4 mb-4">
             <p className="text-sm text-slate-600 leading-relaxed">
               このツールでは、ノードを作成して接続することで、
               <strong className="text-blue-600">ネットワーク効果</strong>
               がどのように価値を高めるかを視覚的に確認できます。
             </p>
+          </div>
+
+          {/* Disclaimer */}
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+            <div className="flex items-start gap-3">
+              <span className="text-amber-500 mt-0.5">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </span>
+              <p className="text-xs text-amber-700 leading-relaxed">
+                <strong>教育・概念理解を目的としたツール</strong>です。
+                計算モデルは簡略化されており、実際のビジネス意思決定の定量的根拠としては使用しないでください。
+              </p>
+            </div>
           </div>
 
           {/* CTA Buttons */}
