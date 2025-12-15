@@ -232,6 +232,18 @@ export const Header: React.FC<HeaderProps> = ({
                 <span>ノードを接続してネットワーク効果を確認</span>
               </div>
             )}
+
+            {/* Disclaimer badge */}
+            <div
+              className="flex items-center text-[10px] text-amber-700 bg-amber-50/80 backdrop-blur-sm rounded-full border border-amber-200/60 cursor-help"
+              style={{ padding: '4px 10px', gap: '4px', marginLeft: '12px' }}
+              title="このツールはネットワーク効果の概念を視覚化するための教育ツールです。実際のビジネス意思決定には専門的な分析が必要です。"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>概念シミュレーション</span>
+            </div>
           </div>
         </div>
       )}
