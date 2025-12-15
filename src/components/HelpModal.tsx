@@ -367,20 +367,20 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, initialTa
                       <div className="w-4 h-4 rounded-full bg-blue-500" />
                       <div className="w-4 h-4 rounded-full bg-blue-500" />
                     </div>
-                    <p className="text-sm font-medium text-slate-700">単体価値（バラバラ）</p>
-                    <p className="text-xs text-slate-500">各ノードの価値の単純合計</p>
+                    <p className="text-sm font-medium text-slate-700">基準スコア（バラバラ）</p>
+                    <p className="text-xs text-slate-500">各ノードが独立した状態</p>
                     <p className="text-lg font-bold text-slate-600 mt-2">100</p>
                   </div>
                   <div className="text-center">
                     <NodeDiagram count={5} size={50} />
-                    <p className="text-sm font-medium text-slate-700">接続価値（ネットワーク）</p>
-                    <p className="text-xs text-slate-500">メトカーフの法則で価値増大</p>
-                    <p className="text-lg font-bold text-blue-600 mt-2">320 <span className="text-emerald-500">(3.2x)</span></p>
+                    <p className="text-sm font-medium text-slate-700">ネットワークスコア</p>
+                    <p className="text-xs text-slate-500">接続で価値が増大</p>
+                    <p className="text-lg font-bold text-blue-600 mt-2">320 <span className="text-emerald-500">(+220%)</span></p>
                   </div>
                 </div>
                 <div className="mt-4 p-3 bg-emerald-50 rounded-lg border border-emerald-200 text-center">
                   <p className="text-sm text-emerald-800">
-                    💰 <strong>接続するだけで価値が3倍以上に！</strong>
+                    💰 <strong>接続するだけでスコアが3倍以上に！</strong>
                   </p>
                 </div>
               </div>
@@ -466,20 +466,20 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, initialTa
                   <div className="flex-1">
                     <h4 className="font-bold text-slate-800 mb-2">効果を確認</h4>
                     <p className="text-sm text-slate-600 mb-3">
-                      ヘッダーで「単体価値」と「接続価値」を比較して、ネットワーク効果を確認します。
+                      ヘッダーで「基準スコア」と「ネットワークスコア」を比較して、接続効果を確認します。
                     </p>
                     <div className="inline-flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
                       <div className="px-3 py-2 bg-white border border-slate-200 rounded-lg">
-                        <span className="text-xs text-slate-500">単体価値</span>
+                        <span className="text-xs text-slate-500">基準スコア</span>
                         <span className="text-sm font-bold text-slate-700 ml-2">100</span>
                       </div>
                       <span className="text-slate-400">→</span>
                       <div className="px-3 py-2 bg-blue-500 rounded-lg">
-                        <span className="text-xs text-blue-100">接続価値</span>
+                        <span className="text-xs text-blue-100">ネットワークスコア</span>
                         <span className="text-sm font-bold text-white ml-2">320</span>
                       </div>
                       <div className="px-2 py-1 bg-emerald-500 rounded-md">
-                        <span className="text-xs font-bold text-white">3.2x 上昇</span>
+                        <span className="text-xs font-bold text-white">+220%</span>
                       </div>
                     </div>
                   </div>

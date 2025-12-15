@@ -185,9 +185,13 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="bg-white/20 border-t border-white/30" style={{ padding: '12px 20px' }}>
           <div className="flex items-center justify-center" style={{ gap: '12px' }}>
             {/* Standalone Value - glass card */}
-            <div className="glass rounded-xl shadow-sm" style={{ padding: '10px 20px' }}>
-              <div className="text-xs font-medium text-slate-500">単体価値</div>
-              <div className="text-[10px] text-slate-400" style={{ marginBottom: '2px' }}>規模の指標</div>
+            <div
+              className="glass rounded-xl shadow-sm cursor-help"
+              style={{ padding: '10px 20px' }}
+              title="各ノードが独立している場合の概念的なスコア"
+            >
+              <div className="text-xs font-medium text-slate-500">基準スコア</div>
+              <div className="text-[10px] text-slate-400" style={{ marginBottom: '2px' }}>接続前</div>
               <div className="text-lg font-semibold text-slate-800">
                 {formatValue(networkValue.standaloneValue)}
               </div>
@@ -206,9 +210,13 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Connected Value - glass card with blue tint */}
             {hasConnections && (
-              <div className="rounded-xl shadow-sm bg-blue-500/80 backdrop-blur-xl border border-blue-400/50" style={{ padding: '10px 20px' }}>
+              <div
+                className="rounded-xl shadow-sm bg-blue-500/80 backdrop-blur-xl border border-blue-400/50 cursor-help"
+                style={{ padding: '10px 20px' }}
+                title={`ノードを接続した場合の概念的なスコア（統合レベル: ${currentIntegration.label}）`}
+              >
                 <div className="text-xs font-medium text-blue-100" style={{ marginBottom: '2px' }}>
-                  接続価値 x{currentIntegration.coefficient.toFixed(1)}
+                  ネットワークスコア
                 </div>
                 <div className="text-lg font-semibold text-white">
                   {formatValue(networkValue.connectedValue)}
@@ -216,13 +224,17 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             )}
 
-            {/* Multiplier - glass card with green tint */}
+            {/* Multiplier - glass card with green tint - show as percentage increase */}
             {showMultiplier && (
-              <div className="flex flex-col items-center rounded-xl shadow-sm bg-emerald-500/80 backdrop-blur-xl border border-emerald-400/50" style={{ padding: '8px 16px' }}>
+              <div
+                className="flex flex-col items-center rounded-xl shadow-sm bg-emerald-500/80 backdrop-blur-xl border border-emerald-400/50 cursor-help"
+                style={{ padding: '8px 16px' }}
+                title={`接続による価値増加の概念的な指標（${networkValue.multiplier.toFixed(1)}倍）`}
+              >
                 <div className="text-lg font-bold text-white">
-                  {networkValue.multiplier.toFixed(1)}x
+                  +{Math.round((networkValue.multiplier - 1) * 100)}%
                 </div>
-                <span className="text-[10px] font-medium text-emerald-100">ネットワーク効果</span>
+                <span className="text-[10px] font-medium text-emerald-100">接続効果</span>
               </div>
             )}
 
