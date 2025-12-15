@@ -1,11 +1,7 @@
-import type { FlowState, SynergyLevel } from '../types/flow';
+import type { FlowState, SynergyLevel, PresetExplanation } from '../types/flow';
 
-export interface PresetExplanation {
-  title: string;
-  summary: string;
-  points: string[];
-  networkEffect: string;
-}
+// Re-export for convenience
+export type { PresetExplanation };
 
 export interface Preset {
   id: string;
@@ -34,6 +30,7 @@ const linePreset: Preset = {
   },
   data: {
     name: 'LINE ネットワーク効果',
+    description: 'LINEの直接ネットワーク効果を可視化。ユーザーが増えるほど連絡できる相手が増え、グループチャット・スタンプ・LINE Payなどのエコシステム全体の価値が高まります。',
     nodes: [
       {
         id: 'line-users',
@@ -103,6 +100,7 @@ const mercariPreset: Preset = {
   },
   data: {
     name: 'メルカリ 両面市場効果',
+    description: 'メルカリの間接ネットワーク効果（両面市場）を可視化。出品者が増えると商品が増え購入者が集まり、購入者が増えると出品者も増える好循環が生まれます。',
     nodes: [
       {
         id: 'mercari-sellers',
@@ -183,6 +181,7 @@ const uberPreset: Preset = {
   },
   data: {
     name: 'Uber ライドシェア効果',
+    description: 'Uberの間接ネットワーク効果とプラットフォーム拡張を可視化。ドライバーが増えると待ち時間短縮→乗客増加→収入増→ドライバー増加の好循環。さらにUber Eatsでドライバーを共有活用。',
     nodes: [
       {
         id: 'uber-drivers',
@@ -252,6 +251,7 @@ const phonePreset: Preset = {
   },
   data: {
     name: '電話ネットワーク メトカーフの法則',
+    description: 'メトカーフの法則（V = n²）の古典的な例。電話は1人では価値がありませんが、接続される人が増えるほど通話可能な相手が増え、ネットワークの価値は参加者数の2乗に比例して増加します。',
     nodes: [
       {
         id: 'phone-tokyo',

@@ -11,6 +11,7 @@ const WELCOME_DISMISSED_KEY = 'network-effect-canvas-welcome-dismissed';
 function App() {
   const {
     name,
+    description,
     nodes,
     connections,
     connectingFrom,
@@ -31,6 +32,7 @@ function App() {
     getState,
     importState,
     setName,
+    setDescription,
   } = useFlowState();
 
   // Get current preset object from ID
@@ -127,6 +129,8 @@ function App() {
           connectingFrom={connectingFrom}
           pendingNode={pendingNode}
           currentPreset={currentPreset}
+          description={description}
+          onDescriptionChange={setDescription}
           onDropNode={handleDropNode}
           onUpdateNodePosition={updateNodePosition}
           onUpdateNodeValue={updateNodeValue}

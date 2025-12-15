@@ -30,9 +30,19 @@ export interface Connection {
   synergy: SynergyLevel;
 }
 
+// Preset explanation structure
+export interface PresetExplanation {
+  title: string;
+  summary: string;
+  points: string[];
+  networkEffect: string;
+}
+
 // Complete flow state
 export interface FlowState {
   name?: string;  // キャンバス名（オプショナル、既存データ互換のため）
+  description?: string;  // キャンバスの解説メモ
+  explanation?: PresetExplanation;  // プリセット解説（共有時に含める）
   nodes: FlowNode[];
   connections: Connection[];
 }

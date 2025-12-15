@@ -6,5 +6,6 @@ export { ConnectionLine } from './ConnectionLine';
 export { HelpModal } from './HelpModal';
 export { WelcomeModal } from './WelcomeModal';
 export { ExplanationPanel } from './ExplanationPanel';
+export { DescriptionPanel } from './DescriptionPanel';
 export { ShareMenu } from './ShareMenu';
 export { ShareCanvas } from './ShareCanvas';

@@ -40,9 +40,10 @@ const loadState = (): FlowState => {
       synergy: conn.synergy ?? 'standard',
     }));
 
-    // Include name (default to 'マイキャンバス' for existing data)
+    // Include name and description (default values for existing data)
     return {
       name: parsed.name ?? 'マイキャンバス',
+      description: parsed.description ?? '',
       nodes,
       connections,
     };
@@ -249,8 +250,13 @@ export const useFlowState = () => {
   const loadPreset = useCallback((presetId: string) => {
     const preset = PRESETS.find((p) => p.id === presetId);
     if (preset) {
-      setState(preset.data);
-      saveState(preset.data);
+      // Include explanation in the state for sharing
+      const newState = {
+        ...preset.data,
+        explanation: preset.explanation,
+      };
+      setState(newState);
+      saveState(newState);
       setConnectingFrom(null);
       setCurrentPresetId(presetId);
     }
@@ -284,8 +290,19 @@ export const useFlowState = () => {
     setCurrentPresetId(null); // プリセットから変更されたことを示す
   }, []);
 
+  // Update canvas description
+  const setDescription = useCallback((description: string) => {
+    setState((prev) => {
+      const newState = { ...prev, description };
+      saveState(newState);
+      return newState;
+    });
+    setCurrentPresetId(null);
+  }, []);
+
   return {
     name: state.name ?? 'マイキャンバス',
+    description: state.description ?? '',
     nodes: state.nodes,
     connections: state.connections,
     connectingFrom,
@@ -308,5 +325,6 @@ export const useFlowState = () => {
     getState,
     importState,
     setName,
+    setDescription,
   };
 };

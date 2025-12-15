@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import type { FlowState, FlowNode, Connection } from '../types/flow';
 import { CANVAS_CONFIG, SYNERGY_CONFIGS } from '../constants/nodes';
 import { formatNumber, formatPercent, getEffectiveValue, calculateNetworkValue } from '../utils/metcalfe';
 import { UsersIcon, BoltIcon, NetworkIcon } from './icons/ServiceIcons';
+import { DescriptionPanel } from './DescriptionPanel';
+import { ExplanationPanel } from './ExplanationPanel';
 
 interface ShareCanvasProps {
   flowState: FlowState;
@@ -304,6 +307,7 @@ export const ShareCanvas: React.FC<ShareCanvasProps> = ({ flowState }) => {
   const { nodes, connections } = flowState;
   const canvasSize = calculateCanvasSize(nodes);
   const networkValue = calculateNetworkValue(nodes, connections, 'simple');
+  const [showExplanation, setShowExplanation] = useState(true);
 
   return (
     <div className="flex flex-col h-full">
@@ -383,6 +387,23 @@ export const ShareCanvas: React.FC<ShareCanvasProps> = ({ flowState }) => {
                 </p>
               </div>
             </div>
+          )}
+
+          {/* Description Panel - Read Only */}
+          {flowState.description && (
+            <DescriptionPanel
+              description={flowState.description}
+              onDescriptionChange={() => {}}
+              isReadOnly={true}
+            />
+          )}
+
+          {/* Explanation Panel - Read Only (for presets) */}
+          {flowState.explanation && showExplanation && (
+            <ExplanationPanel
+              explanation={flowState.explanation}
+              onClose={() => setShowExplanation(false)}
+            />
           )}
         </div>
       </div>

@@ -1,4 +1,5 @@
 import type { PresetExplanation } from '../constants/presets';
+import { useDraggable } from '../hooks/useDraggable';
 
 interface ExplanationPanelProps {
   explanation: PresetExplanation;
@@ -9,11 +10,32 @@ export const ExplanationPanel: React.FC<ExplanationPanelProps> = ({
   explanation,
   onClose,
 }) => {
+  const { position, isDragging, panelRef, handleMouseDown } = useDraggable({
+    storageKey: 'network-effect-canvas-explanation-position',
+    defaultPosition: { x: window.innerWidth - 304, y: 16 }, // right-4 = 16px from right
+  });
+
   return (
-    <div className="absolute right-4 top-4 w-72 glass-heavy rounded-2xl shadow-glass-lg border border-white/40 overflow-hidden">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-500/80 to-purple-500/80 backdrop-blur-xl px-4 py-3 flex items-center justify-between">
-        <h3 className="text-sm font-bold text-white">{explanation.title}</h3>
+    <div
+      ref={panelRef}
+      className={`absolute w-72 glass-heavy rounded-2xl shadow-glass-lg border border-white/40 overflow-hidden ${isDragging ? 'cursor-grabbing' : ''}`}
+      style={{
+        left: position.x,
+        top: position.y,
+        zIndex: isDragging ? 100 : 10,
+      }}
+    >
+      {/* Header - Draggable */}
+      <div
+        className={`bg-gradient-to-r from-blue-500/80 to-purple-500/80 backdrop-blur-xl px-4 py-3 flex items-center justify-between cursor-grab ${isDragging ? 'cursor-grabbing' : ''}`}
+        onMouseDown={handleMouseDown}
+      >
+        <div className="flex items-center gap-2">
+          <svg className="w-3 h-3 text-white/60" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 6a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM8 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM8 18a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM14 6a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM14 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM14 18a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z" />
+          </svg>
+          <h3 className="text-sm font-bold text-white select-none">{explanation.title}</h3>
+        </div>
         <button
           onClick={onClose}
           className="w-6 h-6 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-colors"

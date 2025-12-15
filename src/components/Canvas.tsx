@@ -4,6 +4,7 @@ import type { Preset } from '../constants/presets';
 import { Node } from './Node';
 import { ConnectionLine } from './ConnectionLine';
 import { ExplanationPanel } from './ExplanationPanel';
+import { DescriptionPanel } from './DescriptionPanel';
 import { NetworkIcon } from './icons/ServiceIcons';
 
 const ZOOM_MIN = 0.25;
@@ -17,6 +18,8 @@ interface CanvasProps {
   connectingFrom: string | null;
   pendingNode: { input: any } | null;
   currentPreset: Preset | null;
+  description: string;
+  onDescriptionChange: (description: string) => void;
   onDropNode: (position: Position) => void;
   onUpdateNodePosition: (id: string, position: Position) => void;
   onUpdateNodeValue: (id: string, value: number) => void;
@@ -36,6 +39,8 @@ export const Canvas: React.FC<CanvasProps> = ({
   connectingFrom,
   pendingNode,
   currentPreset,
+  description,
+  onDescriptionChange,
   onDropNode,
   onUpdateNodePosition,
   onUpdateNodeValue,
@@ -212,6 +217,12 @@ export const Canvas: React.FC<CanvasProps> = ({
           <span className="text-slate-400">キャンバスクリックでキャンセル</span>
         </div>
       )}
+
+      {/* Description Panel for custom memos - always available */}
+      <DescriptionPanel
+        description={description}
+        onDescriptionChange={onDescriptionChange}
+      />
 
       {/* Explanation Panel for presets */}
       {currentPreset && (
