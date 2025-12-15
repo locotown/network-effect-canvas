@@ -66,6 +66,7 @@ export interface IntegrationConfig {
 export interface SynergyConfig {
   level: SynergyLevel;
   label: string;
+  description: string;
   coefficient: number;
 }
 

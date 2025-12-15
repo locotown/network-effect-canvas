@@ -210,6 +210,7 @@ export const ConnectionLine: React.FC<ConnectionLineProps> = ({
             backdropFilter: 'blur(12px) saturate(180%)',
             WebkitBackdropFilter: 'blur(12px) saturate(180%)',
           }}
+          title={`${synergyConfig.label}: ${synergyConfig.description}（概念的な目安）`}
         >
           <span
             className="text-[10px] font-semibold"
@@ -222,7 +223,7 @@ export const ConnectionLine: React.FC<ConnectionLineProps> = ({
 
       {/* Synergy selection menu - glass style */}
       {showSynergyMenu && (
-        <foreignObject x={midX - 60} y={midY + 14} width="120" height="130">
+        <foreignObject x={midX - 80} y={midY + 14} width="160" height="160">
           <div
             className="bg-white/80 backdrop-blur-xl border border-white/50 rounded-xl shadow-glass-lg overflow-hidden"
             style={{
@@ -232,25 +233,32 @@ export const ConnectionLine: React.FC<ConnectionLineProps> = ({
           >
             <div className="px-3 py-1.5 bg-white/30 border-b border-white/30">
               <span className="text-[10px] font-medium text-slate-600">シナジーレベル</span>
+              <span className="text-[8px] text-slate-400 ml-1">（目安）</span>
             </div>
             {SYNERGY_LEVELS.map((level) => (
               <button
                 key={level.level}
                 onClick={() => handleSynergySelect(level.level)}
-                className={`w-full px-3 py-1.5 text-[10px] text-left flex items-center justify-between transition-all duration-200 ${
+                className={`w-full px-3 py-2 text-left transition-all duration-200 ${
                   connection.synergy === level.level
                     ? 'bg-blue-500/20 text-blue-700'
                     : 'text-slate-600 hover:bg-white/50'
                 }`}
+                title={level.description}
               >
-                <span className="font-medium">{level.label}</span>
-                <span className={`font-semibold px-1.5 py-0.5 rounded ${
-                  connection.synergy === level.level
-                    ? 'bg-blue-500/20'
-                    : 'bg-white/50'
-                }`}>
-                  {level.coefficient.toFixed(1)}x
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-medium">{level.label}</span>
+                  <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                    connection.synergy === level.level
+                      ? 'bg-blue-500/20'
+                      : 'bg-white/50'
+                  }`}>
+                    {level.coefficient.toFixed(1)}x
+                  </span>
+                </div>
+                <div className="text-[8px] text-slate-400 mt-0.5 truncate">
+                  {level.description}
+                </div>
               </button>
             ))}
           </div>

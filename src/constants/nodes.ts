@@ -81,20 +81,25 @@ export const INTEGRATION_CONFIGS: Record<IntegrationLevel, IntegrationConfig> = 
 export const INTEGRATION_LEVELS = Object.values(INTEGRATION_CONFIGS);
 
 // Synergy level configurations
+// Note: These coefficients are conceptual estimates for educational purposes,
+// not empirically derived values. Adjust based on your understanding of the relationship.
 export const SYNERGY_CONFIGS: Record<SynergyLevel, SynergyConfig> = {
   standard: {
     level: 'standard',
     label: '標準',
+    description: '基本的な関連性（単純な相互参照など）',
     coefficient: 1.0,
   },
   good: {
     level: 'good',
     label: '良好',
+    description: '機能連携あり（データ共有、APIなど）',
     coefficient: 1.2,
   },
   excellent: {
     level: 'excellent',
     label: '最高',
+    description: '深い統合（シームレスな体験、相乗効果）',
     coefficient: 1.5,
   },
 };
